@@ -2,7 +2,7 @@
 
 
 def simulate(x, u, dt=0.1):
-    print "x, u, dt", x, u, dt
+    # print "x, u, dt", x, u, dt
     v = x[1] + (u[0]) * dt
     p = x[0] + x[1] * dt
 

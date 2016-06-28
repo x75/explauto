@@ -1,6 +1,9 @@
 notebook/.ipynb_checkpoints/*
 *.py[cod]
 
+# backup files
+*~
+
 # Distribution / packaging
 .Python
 env/

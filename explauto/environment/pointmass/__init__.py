@@ -6,17 +6,18 @@ from ...exceptions import ExplautoNoTestCasesError
 from .pointmass import PointmassEnvironment
 
 
-def make_pointmass_config(m_ndims, m_max, s_mins, s_maxs, mass, noise):
+def make_pointmass_config(m_ndims, m_max, s_mins, s_maxs, mass, sysnoise, sensnoise):
     return dict(m_mins=array([-m_max] * m_ndims),
                 m_maxs=array([m_max] * m_ndims),
                 s_mins=s_mins,
                 s_maxs=s_maxs,
                 mass=mass,
-                noise=noise)
+                sysnoise = sysnoise,
+                sensnoise = sensnoise)
 
-low_dim = make_pointmass_config(1, 1, array([-10.0, -10.0]), array([10., 10.]), 1, 0.02)
-mid_dim = make_pointmass_config(3, 1, array([-10.0, -10.0]), array([10., 10.]), 1, 0.02)
-hd_dim = make_pointmass_config(10, 1, array([-10.0, -10.0]), array([10., 10.]), 1, 0.02)
+low_dim = make_pointmass_config(1, 1, array([-10.0, -10.0]),      array([10., 10.]),      1, 0.02, 0.02)
+mid_dim = make_pointmass_config(3, 1, array([-10.0, -10.0] *  3), array([10., 10.] *  3), 1, 0.02, 0.02)
+hd_dim = make_pointmass_config(10, 1, array([-10.0, -10.0] * 10), array([10., 10.] * 10), 1, 0.02, 0.02)
 # hd_dim = make_arm_config(30, pi/8., array([-0.6, -0.9]), array([1., 0.9]), 1., 0.001)
 
 # hd_dim_range = make_arm_config(30, pi/8., array([-2., -2.]), array([2., 2.]), 1., 0.001)
@@ -43,5 +44,6 @@ def testcases(config_str, n_samples=100):
 
     # else:
     env = environment(**configurations[config_str])
-    env.noise = 0.
+    env.sysnoise = 0.
+    env.sensnoise = 0.
     return env.uniform_sensor(n_samples)
