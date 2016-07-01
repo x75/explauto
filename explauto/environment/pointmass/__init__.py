@@ -25,12 +25,12 @@ low_dim_vel = make_pointmass_config(st_ndims = 3,
                                 m_ndims = 1,
                                 s_ndims = 1,
                                 sensor_transform = np.array([[0, 1, 0]]),
-                                m_max = 1,
+                                m_max = 1.0,
                                 s_mins = array([-10.0]),
                                 s_maxs = array([ 10.0]),
                                 mass = 1,
-                                sysnoise = 0.02,
-                                sensnoise = 0.02)
+                                sysnoise = 0.01,
+                                sensnoise = 0.0)
 
 low_dim_full = make_pointmass_config(st_ndims = 3,
                                 m_ndims = 1,

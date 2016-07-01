@@ -103,6 +103,7 @@ class ExperimentLog(object):
             errors = errors ** 2
         avg_err = mean(errors, axis=1)
         std_err = std(errors, axis=1)
+        
         ax.errorbar(self.eval_at, avg_err, yerr=std_err)
         axis = ax.axis()
         ax.axis([self.eval_at[0] * 0.9, self.eval_at[-1] * 1.1, axis[2], axis[3]])

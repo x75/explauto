@@ -97,4 +97,5 @@ sensorimotor_models = {
     'WNN': (NonParametric, {'default': {'fwd': 'WNN', 'inv': 'WNN', 'k':20, 'sigma':0.1}}),
     'LWLR-BFGS': (NonParametric, {'default': {'fwd': 'LWLR', 'k':10, 'sigma':0.1, 'inv': 'L-BFGS-B', 'maxfun':50}}),
     'LWLR-CMAES': (NonParametric, {'default': {'fwd': 'LWLR', 'k':10, 'sigma':0.1, 'inv': 'CMAES', 'cmaes_sigma':0.05, 'maxfevals':20}}),
+    'LN-FORCE': (NonParametric, {'default': {'fwd': 'LN-FORCE', 'inv': 'LN-FORCE'}}),
 }
