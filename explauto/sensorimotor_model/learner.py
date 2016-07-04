@@ -19,7 +19,8 @@ invclass = {'NN'       : inverse.NNInverseModel,
             'L-BFGS-B' : inverse.BFGSInverseModel,
             'COBYLA'   : inverse.COBYLAInverseModel,
             'CMAES'    : inverse.CMAESInverseModel,
-            'Jacobian' : inverse.JacobianInverseModel
+            'Jacobian' : inverse.JacobianInverseModel,
+            'LN-FORCE' : inverse.LinearNetworkFORCEModel
            }
 
 
@@ -37,6 +38,7 @@ class Learner(object):
         self.Sfeats  = Sfeats
         self.Mbounds = Mbounds
         fmodel = fwdclass[fwd](len(Mfeats), len(Sfeats), **kwargs)
+        print "learner.py", invclass[inv], inv
         self.imodel = invclass[inv](dim_x=len(Mfeats), dim_y=len(Sfeats), fmodel=fmodel, constraints=Mbounds, **kwargs)
 
     # Interface
