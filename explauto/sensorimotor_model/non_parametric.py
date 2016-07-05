@@ -76,6 +76,7 @@ class NonParametric(SensorimotorModel):
         return self.model.imodel.fmodel.predict_given_context(x, c, c_dims)
 
     def update(self, m, s):
+        print "non_parametric.py: update(m, s)", m, s
         self.model.add_xy(tuple(m), tuple(s))
         self.t += 1
         if not self.bootstrapped_s and self.t > 1:
@@ -97,5 +98,4 @@ sensorimotor_models = {
     'WNN': (NonParametric, {'default': {'fwd': 'WNN', 'inv': 'WNN', 'k':20, 'sigma':0.1}}),
     'LWLR-BFGS': (NonParametric, {'default': {'fwd': 'LWLR', 'k':10, 'sigma':0.1, 'inv': 'L-BFGS-B', 'maxfun':50}}),
     'LWLR-CMAES': (NonParametric, {'default': {'fwd': 'LWLR', 'k':10, 'sigma':0.1, 'inv': 'CMAES', 'cmaes_sigma':0.05, 'maxfevals':20}}),
-    'LN-FORCE': (NonParametric, {'default': {'fwd': 'NN', 'inv': 'LN-FORCE', 'sigma_explo_ratio': 0.1}}),
 }

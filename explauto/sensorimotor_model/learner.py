@@ -49,6 +49,7 @@ class Learner(object):
             :arg x:  an input (order) vector compatible with self.Mfeats.
             :arg y:  a output (effect) vector compatible with self.Sfeats.
         """
+        print "learner.py: add_xy", x, y
         self.imodel.add_xy(self._pre_x(x), self._pre_y(y))
                 
     def add_xy_batch(self, x_list, y_list): self.imodel.fmodel.add_xy_batch(x_list, y_list)
