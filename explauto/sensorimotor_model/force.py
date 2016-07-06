@@ -31,7 +31,8 @@ class LinearNetworkFORCEModel(SensorimotorModel):
 
         if in_dims == self.m_dims and out_dims == self.s_dims:  # forward
             # print "x", x
-            return np.random.uniform(-1, 1, (len(out_dims),))            
+            return self.fmodel.predict(x)
+            # return np.random.uniform(-1, 1, (len(out_dims),))
         elif in_dims == self.s_dims and out_dims == self.m_dims:  # inverse
             # print "x", x
             # print "inverse", len(in_dims), in_dims, out_dims
