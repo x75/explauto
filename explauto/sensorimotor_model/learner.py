@@ -20,7 +20,6 @@ invclass = {'NN'       : inverse.NNInverseModel,
             'COBYLA'   : inverse.COBYLAInverseModel,
             'CMAES'    : inverse.CMAESInverseModel,
             'Jacobian' : inverse.JacobianInverseModel,
-            'LN-FORCE' : inverse.LinearNetworkFORCEModel
            }
 
 

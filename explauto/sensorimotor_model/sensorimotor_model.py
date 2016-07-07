@@ -13,6 +13,7 @@ class SensorimotorModel(object):
     @classmethod
     def from_configuration(cls, conf, sm_name, config_name='default'):
         sm_cls, sm_configs = sensorimotor_models[sm_name]
+        # print "sm_cls", sm_cls
         return sm_cls(conf, **sm_configs[config_name])
 
     @abstractmethod

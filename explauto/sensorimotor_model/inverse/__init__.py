@@ -4,4 +4,3 @@ from .nn            import NNInverseModel
 from .wnn           import WeightedNNInverseModel, ESWNNInverseModel
 from .cmamodel      import CMAESInverseModel
 from .jacobian      import JacobianInverseModel
-from .linearnetwork import LinearNetworkFORCEModel
