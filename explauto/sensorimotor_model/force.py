@@ -10,7 +10,7 @@ sys.path.insert(0, "/home/src/QK/smp/imol")
 from imol.models import LinearNetwork
 
 class LinearNetworkFORCEModel(SensorimotorModel):
-    def __init__(self, conf, modelsize = 100, sigma_explo_ratio=0.1):
+    def __init__(self, conf, modelsize = 100, sigma_explo_ratio=0.1, alpha = 1.0):
         SensorimotorModel.__init__(self, conf)
         for attr in ['m_ndims', 's_ndims', 'm_dims', 's_dims', 'bounds', 'm_mins', 'm_maxs']:
             setattr(self, attr, getattr(conf, attr))
@@ -21,12 +21,12 @@ class LinearNetworkFORCEModel(SensorimotorModel):
         mbounds = tuple((self.bounds[0, d], self.bounds[1, d]) for d in range(self.m_ndims))
         print "mfeats", mfeats, "sfeats", sfeats
 
-        self.sigma_expl = (conf.m_maxs - conf.m_mins) * float(sigma_explo_ratio)
-        print "self.sigma_expl", self.sigma_expl
-                
         self.modelsize = modelsize
         self.fmodel = LinearNetwork(modelsize = self.modelsize, idim = len(sfeats)/2 + len(mfeats), odim = len(sfeats)/2)
-        self.imodel = LinearNetwork(modelsize = self.modelsize, idim = len(sfeats), odim = len(mfeats))
+        self.imodel = LinearNetwork(modelsize = self.modelsize, idim = len(sfeats), odim = len(mfeats), alpha = alpha)
+        
+        self.sigma_expl = ((conf.m_maxs - conf.m_mins) * float(sigma_explo_ratio)).reshape((self.imodel.odim,1))
+        print "self.sigma_expl", self.sigma_expl.shape
 
     def infer(self, in_dims, out_dims, x):
         # if self.t < max(self.model.imodel.fmodel.k, self.model.imodel.k):
@@ -46,38 +46,45 @@ class LinearNetworkFORCEModel(SensorimotorModel):
             y, h = self.imodel.predict(x)
             print self.__class__.__name__, "infer: y pre", y
             if self.mode == "explore":
-                y = y.copy() + np.random.normal(y, self.sigma_expl)
-            y_ = bounds_min_max(y, self.m_mins, self.m_maxs)
-            print self.__class__.__name__, "infer: y post", y
+                # print self.__class__.__name__, "infer: explore: y.shape", y.shape, type(self.sigma_expl)
+                n = np.random.normal(y, self.sigma_expl)
+                # print self.__class__.__name__, "infer: explore: n.shape", y.shape, n.shape, self.imodel.odim
+                y = y.copy() + n
+            y_ = bounds_min_max(y.T, self.m_mins, self.m_maxs)
+            print self.__class__.__name__, "infer: y post", y_.shape, y.shape
             return y_.reshape((self.imodel.odim,))
-        
+                
         elif out_dims == self.m_dims[len(self.m_dims)/2:]:  # dm = i(M, S, dS)
             return np.random.uniform(-1, 1, (len(in_dims),))
         else:
             raise NotImplementedError
 
-
     def update(self, m, s):
-        print self.__class__.__name__, "update(m, s)", m, s, self.imodel.y
-        s_t   = np.array([s[:self.fmodel.idim/2]]).T
-        s_tp1 = np.array([s[self.fmodel.idim/2:]]).T
+        # print self.__class__.__name__, "update(m, s)", m, s, self.imodel.y
+        s_t   = np.array([s[:self.fmodel.idim/2]]).T # context
+        s_tp1 = np.array([s[self.fmodel.idim/2:]]).T # current sensory state
         m_    = np.array([m]).T
         # , self.fmodel.idim, self.fmodel.idim, 
-        print self.__class__.__name__, "update: prepared inputs", "s_t s_tp1, m_", s_t, s_tp1, m_
+        # print self.__class__.__name__, "update: prepared inputs", "s_t s_tp1, m_", s_t, s_tp1, m_
         X_fwd = np.vstack((s_t, m_))
         Y_fwd = s_tp1 # np.array([m]).T
         X_inv = np.array([s]).T
         Y_inv = m_
-        print "X_fwd", X_fwd, "Y_fwd", Y_fwd
-        print "X_inv", X_inv, "Y_inv", Y_inv, self.imodel.y
+        # print "X_fwd", X_fwd, "Y_fwd", Y_fwd
+        # print "X_inv", X_inv, "Y_inv", Y_inv, self.imodel.y
         ffiterr = self.fmodel.fitFORCE(X_fwd, Y_fwd)
         ifiterr = self.imodel.fitFORCE(X_inv, Y_inv)
+        # ifiterr = self.imodel.fitRLS(X_inv, Y_inv)
+        # ifiterr = self.imodel.fit(X_inv, Y_inv)
         print("fiterr f, i", ffiterr, ifiterr, np.linalg.norm(self.imodel.W_o, 2))
         
 configurations = {
     "default": {
-        "modelsize": 100,
-        "sigma_explo_ratio": 0.8,
+        # "modelsize": 100,
+        "modelsize": 300,
+        "sigma_explo_ratio": 0.8, # 0.8 yields best results so far
+        # "sigma_explo_ratio": 0.3,   # should also work with 0.3 or less, let's try
+        "alpha": 1.0
     },
     "medium": {
         "modelsize": 300,
