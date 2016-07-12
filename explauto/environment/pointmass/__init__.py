@@ -29,8 +29,8 @@ low_dim_vel = make_pointmass_config(st_ndims = 3,
                                 s_mins = array([-1.0]),
                                 s_maxs = array([ 1.0]),
                                 mass = 1,
-                                sysnoise = 0.0,
-                                sensnoise = 0.0)
+                                sysnoise = 0.001,
+                                sensnoise = 0.001)
 
 low_dim_full = make_pointmass_config(st_ndims = 3,
                                 m_ndims = 1,
@@ -53,7 +53,7 @@ mid_dim_vel = make_pointmass_config(st_ndims = 9,
                                 m_max = 1,
                                 s_mins = array([-1.0] *  3),
                                 s_maxs = array([ 1.0] *  3),
-                                mass = 1,
+                                mass = 10.0,
                                 sysnoise = 0.02,
                                 sensnoise = 0.02)
 
