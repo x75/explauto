@@ -53,9 +53,9 @@ mid_dim_vel = make_pointmass_config(st_ndims = 9,
                                 m_max = 1,
                                 s_mins = array([-1.0] *  3),
                                 s_maxs = array([ 1.0] *  3),
-                                mass = 10.0,
-                                sysnoise = 0.02,
-                                sensnoise = 0.02)
+                                mass = 1.0,
+                                sysnoise = 0.0,
+                                sensnoise = 0.0)
 
 mid_dim_full = make_pointmass_config(st_ndims = 9,
                                 m_ndims = 3,
@@ -67,6 +67,28 @@ mid_dim_full = make_pointmass_config(st_ndims = 9,
                                 mass = 1,
                                 sysnoise = 0.02,
                                 sensnoise = 0.02)
+
+high_dim_vel = make_pointmass_config(st_ndims = 3 * 10,
+                                m_ndims = 10,
+                                s_ndims = 10,
+                                sensor_transform = np.array([
+                                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                    ]),
+                                m_max = 1,
+                                s_mins = array([-1.0] *  10),
+                                s_maxs = array([ 1.0] *  10),
+                                mass = 1.0,
+                                sysnoise = 0.0,
+                                sensnoise = 0.0)
 
 # hd_dim = make_pointmass_config(st_ndims = 30,
 #                                m_ndims = 10,
@@ -85,8 +107,9 @@ environment = PointmassEnvironment
 configurations = {
     'low_dim_full': low_dim_full,
     'mid_dim_full': mid_dim_full,
-    'low_dim_vel': low_dim_vel,
-    'mid_dim_vel': mid_dim_vel,
+    'low_dim_vel':  low_dim_vel,
+    'mid_dim_vel':  mid_dim_vel,
+    'high_dim_vel': high_dim_vel,
     # 'high_dimensional': hd_dim,
     # 'high_dim_high_s_range': hd_dim_range,
     'default': low_dim_vel

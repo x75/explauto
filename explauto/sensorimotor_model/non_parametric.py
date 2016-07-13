@@ -32,6 +32,7 @@ class NonParametric(SensorimotorModel):
         self.bootstrapped_s = False
 
     def infer(self, in_dims, out_dims, x):
+        print "in_dims", in_dims, "out_dims", out_dims, "x", x
         if self.t < max(self.model.imodel.fmodel.k, self.model.imodel.k):
             raise ExplautoBootstrapError
 
@@ -76,7 +77,6 @@ class NonParametric(SensorimotorModel):
         return self.model.imodel.fmodel.predict_given_context(x, c, c_dims)
 
     def update(self, m, s):
-        print "non_parametric.py: update(m, s)", m, s
         self.model.add_xy(tuple(m), tuple(s))
         self.t += 1
         if not self.bootstrapped_s and self.t > 1:

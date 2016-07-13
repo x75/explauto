@@ -37,7 +37,6 @@ class Learner(object):
         self.Sfeats  = Sfeats
         self.Mbounds = Mbounds
         fmodel = fwdclass[fwd](len(Mfeats), len(Sfeats), **kwargs)
-        print "learner.py", invclass[inv], inv
         self.imodel = invclass[inv](dim_x=len(Mfeats), dim_y=len(Sfeats), fmodel=fmodel, constraints=Mbounds, **kwargs)
 
     # Interface
@@ -48,7 +47,6 @@ class Learner(object):
             :arg x:  an input (order) vector compatible with self.Mfeats.
             :arg y:  a output (effect) vector compatible with self.Sfeats.
         """
-        print "learner.py: add_xy", x, y
         self.imodel.add_xy(self._pre_x(x), self._pre_y(y))
                 
     def add_xy_batch(self, x_list, y_list): self.imodel.fmodel.add_xy_batch(x_list, y_list)

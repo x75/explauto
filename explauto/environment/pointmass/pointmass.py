@@ -31,6 +31,7 @@ class PointmassEnvironment(Environment):
         self.dt = dt
         self.force_max = force_max
         self.mass = mass
+        self.friction = 0.05
         self.x = self.x0.copy()
 
         # context
@@ -56,7 +57,7 @@ class PointmassEnvironment(Environment):
             
         # print("a.shape", a.shape)
         # print "a", a, self.x[self.conf.s_ndims/2:]
-        v = self.x[self.world_dim:self.world_dim*2] * 0.99 + a * self.dt
+        v = self.x[self.world_dim:self.world_dim*2] * (1 - self.friction) + a * self.dt
         
         # # world modification
         # v += np.sin(self.cnt * 0.01) * 0.05

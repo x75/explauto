@@ -24,14 +24,16 @@ class LinearNetworkFORCEModel(SensorimotorModel):
         self.modelsize = modelsize
         self.fmodel = LinearNetwork(modelsize = self.modelsize, idim = len(sfeats)/2 + len(mfeats), odim = len(sfeats)/2, alpha = alpha,
                                     eta = eta, theta_state = theta_state, input_scaling = input_scaling)
+        self.ffiterr = np.zeros((self.s_ndims,))
         self.imodel = LinearNetwork(modelsize = self.modelsize, idim = len(sfeats), odim = len(mfeats), alpha = alpha,
                                     eta = eta, theta_state = theta_state, input_scaling = input_scaling)
+        self.ifiterr = np.zeros((self.m_ndims,))
         
         self.sigma_expl = ((conf.m_maxs - conf.m_mins) * float(sigma_explo_ratio)).reshape((self.imodel.odim,1))
         print "self.sigma_expl", self.sigma_expl.shape
 
-        self.stats = (np.array([ 0.05330568]), np.array([ 0.32410747]), np.array([ 0.00865745]), np.array([ 0.56716436]))
-        # self.stats = (np.array([ 0.05330568]), np.array([ 1.0]), np.array([ 0.00865745]), np.array([ 1.0]))
+        # self.stats = (np.array([ 0.05330568]), np.array([ 0.32410747]), np.array([ 0.00865745]), np.array([ 0.56716436]))
+        self.stats = (np.array([ 0.05330568]), np.array([ 1.0]), np.array([ 0.00865745]), np.array([ 1.0]))
 
     def infer(self, in_dims, out_dims, x):
         # if self.t < max(self.model.imodel.fmodel.k, self.model.imodel.k):
@@ -47,7 +49,7 @@ class LinearNetworkFORCEModel(SensorimotorModel):
             # print "x", x
             # print "inverse", len(in_dims), in_dims, out_dims
             x = np.array([x]).T / self.stats[1]
-            print "x", x#, "y", y
+            # print "x", x#, "y", y
             y, h = self.imodel.predict(x)
             y *= self.stats[3]
             print self.__class__.__name__, "infer: y pre", y
@@ -80,22 +82,22 @@ class LinearNetworkFORCEModel(SensorimotorModel):
         Y_inv = m_
         # print "X_fwd", X_fwd, "Y_fwd", Y_fwd
         # print "X_inv", X_inv, "Y_inv", Y_inv, self.imodel.y
-        ffiterr = self.fmodel.fitFORCE(X_fwd, Y_fwd)
-        ifiterr = self.imodel.fitFORCE(X_inv, Y_inv, reverse = False)
+        self.ffiterr = self.fmodel.fitFORCE(X_fwd, Y_fwd)
+        self.ifiterr = self.imodel.fitFORCE(X_inv, Y_inv, reverse = False)
         # ifiterr = self.imodel.fitRLS(X_inv, Y_inv)
         # ifiterr = self.imodel.fit(X_inv, Y_inv)
-        print("fiterr f, i", ffiterr, ifiterr, np.linalg.norm(self.imodel.W_o, 2))
-        return ffiterr, ifiterr
+        # print("fiterr f, i", ffiterr, ifiterr, np.linalg.norm(self.imodel.W_o, 2))
+        # return ffiterr, ifiterr
         
 configurations = {
     # works: size 100, sigma 0.1, iscale 1e0, seed 2
     "default": {
         # "modelsize": 1000,
         # "modelsize": 300,
-        "modelsize": 100,
+        "modelsize": 600,
         # "sigma_explo_ratio": 0.8, # 0.8 yields best results so far
         "sigma_explo_ratio": 0.1,   # should also work with 0.3 or less, let's try
-        "theta_state": 1e-2,
+        "theta_state": 1e-4,
         # "input_scaling": 5e-2,
         # "input_scaling": 1e-1,
         "input_scaling": 1,
