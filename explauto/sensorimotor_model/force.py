@@ -22,9 +22,15 @@ class LinearNetworkFORCEModel(SensorimotorModel):
         print "mfeats", mfeats, "sfeats", sfeats
 
         self.modelsize = modelsize
-        self.fmodel = LinearNetwork(modelsize = self.modelsize, idim = len(sfeats)/2 + len(mfeats), odim = len(sfeats)/2, alpha = alpha,
+        # this is the forward model standard edition
+        self.fmodel = LinearNetwork(modelsize = self.modelsize, idim = len(mfeats), odim = len(sfeats), alpha = alpha,
                                     eta = eta, theta_state = theta_state, input_scaling = input_scaling)
-        self.ffiterr = np.zeros((self.s_ndims,))
+        self.ffiterr = np.zeros((self.s_ndims,))        
+        # this is the forward model considering context
+        self.fmodel_context = LinearNetwork(modelsize = self.modelsize, idim = len(sfeats)/2 + len(mfeats), odim = len(sfeats), alpha = alpha,
+                                    eta = eta, theta_state = theta_state, input_scaling = input_scaling)
+        self.ffiterr_context = np.zeros((self.s_ndims,))
+        # this is the inverse model, this works straightaway with context information
         self.imodel = LinearNetwork(modelsize = self.modelsize, idim = len(sfeats), odim = len(mfeats), alpha = alpha,
                                     eta = eta, theta_state = theta_state, input_scaling = input_scaling)
         self.ifiterr = np.zeros((self.m_ndims,))
@@ -40,9 +46,11 @@ class LinearNetworkFORCEModel(SensorimotorModel):
         #     raise ExplautoBootstrapError
 
         if in_dims == self.m_dims and out_dims == self.s_dims:  # forward
-            # print "x", x
+            print "x", x
             x = np.array([x]).T
+            # y, h = self.fmodel_context.predict(x)
             y, h = self.fmodel.predict(x)
+            print "y", y
             return y.reshape((self.fmodel.odim,))
             # return np.random.uniform(-1, 1, (len(out_dims),))
         elif in_dims == self.s_dims and out_dims == self.m_dims:  # inverse
@@ -67,23 +75,35 @@ class LinearNetworkFORCEModel(SensorimotorModel):
         else:
             raise NotImplementedError
 
+    def predict_given_context(self, x, c, c_dims):
+        """predict sensory consequence (s_{t+1} given sensory / environmental context (s_t) and motor (m_t)"""
+        x_ = np.array([c + x]).T
+        print "x, c, c_dims", x, c, c_dims, x_
+        y, h = self.fmodel_context.predict(x_)
+        # return np.zeros((self.fmodel_context.odim, ))
+        return y.reshape((self.fmodel_context.odim,))
+        
     def update(self, m, s):
         print self.__class__.__name__, "update(m, s)", m, s, self.imodel.y
-        s_t   = np.array([s[:self.fmodel.idim/2]]).T / self.stats[1] # context
-        s_tp1 = np.array([s[self.fmodel.idim/2:]]).T / self.stats[1] # current sensory state
+        s_t   = np.array([s[:self.fmodel_context.idim/2]]).T / self.stats[1] # context
+        s_tp1 = np.array([s[self.fmodel_context.idim/2:]]).T / self.stats[1] # current sensory state
         m_    = np.array([m]).T / self.stats[3]
-        # , self.fmodel.idim, self.fmodel.idim, 
+        # , self.fmodel_context.idim, self.fmodel_context.idim, 
         # print self.__class__.__name__, "update: prepared inputs", "s_t s_tp1, m_", s_t, s_tp1, m_
-        X_fwd = np.vstack((s_t, m_))
-        Y_fwd = s_tp1 # np.array([m]).T
+        X_fwd = m_.copy()
+        Y_fwd = np.vstack((s_t, s_tp1))
+                
+        X_fwd_context = np.vstack((s_t, m_))
+        Y_fwd_context = np.vstack((s_t, s_tp1)) # np.array([m]).T
         # X_inv_ = np.array([s]).T
         X_inv = np.vstack((s_t, s_tp1))
         # print "X_inv eq?", X_inv_ == X_inv
         Y_inv = m_
         # print "X_fwd", X_fwd, "Y_fwd", Y_fwd
         # print "X_inv", X_inv, "Y_inv", Y_inv, self.imodel.y
-        self.ffiterr = self.fmodel.fitFORCE(X_fwd, Y_fwd)
-        self.ifiterr = self.imodel.fitFORCE(X_inv, Y_inv, reverse = False)
+        self.ffiterr         = self.fmodel.fitFORCE(X_fwd, Y_fwd)
+        self.ffiterr_context = self.fmodel_context.fitFORCE(X_fwd_context, Y_fwd_context)
+        self.ifiterr         = self.imodel.fitFORCE(X_inv, Y_inv, reverse = False)
         # ifiterr = self.imodel.fitRLS(X_inv, Y_inv)
         # ifiterr = self.imodel.fit(X_inv, Y_inv)
         # print("fiterr f, i", ffiterr, ifiterr, np.linalg.norm(self.imodel.W_o, 2))
@@ -93,8 +113,9 @@ configurations = {
     # works: size 100, sigma 0.1, iscale 1e0, seed 2
     "default": {
         # "modelsize": 1000,
-        # "modelsize": 300,
         "modelsize": 600,
+        # "modelsize": 300,
+        # "modelsize": 100,
         # "sigma_explo_ratio": 0.8, # 0.8 yields best results so far
         "sigma_explo_ratio": 0.1,   # should also work with 0.3 or less, let's try
         "theta_state": 1e-4,
