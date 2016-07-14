@@ -31,7 +31,7 @@ class PointmassEnvironment(Environment):
         self.dt = dt
         self.force_max = force_max
         self.mass = mass
-        self.friction = 0.05
+        self.friction = 0.01
         self.x = self.x0.copy()
 
         # context

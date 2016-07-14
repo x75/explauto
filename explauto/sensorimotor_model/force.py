@@ -46,11 +46,11 @@ class LinearNetworkFORCEModel(SensorimotorModel):
         #     raise ExplautoBootstrapError
 
         if in_dims == self.m_dims and out_dims == self.s_dims:  # forward
-            print "x", x
+            # print "x", x
             x = np.array([x]).T
             # y, h = self.fmodel_context.predict(x)
             y, h = self.fmodel.predict(x)
-            print "y", y
+            # print "y", y
             return y.reshape((self.fmodel.odim,))
             # return np.random.uniform(-1, 1, (len(out_dims),))
         elif in_dims == self.s_dims and out_dims == self.m_dims:  # inverse
@@ -60,14 +60,14 @@ class LinearNetworkFORCEModel(SensorimotorModel):
             # print "x", x#, "y", y
             y, h = self.imodel.predict(x)
             y *= self.stats[3]
-            print self.__class__.__name__, "infer: y pre", y
+            # print self.__class__.__name__, "infer: y pre", y
             if self.mode == "explore":
                 # print self.__class__.__name__, "infer: explore: y.shape", y.shape, type(self.sigma_expl)
                 n = np.random.normal(y, 1) * self.sigma_expl
                 # print self.__class__.__name__, "infer: explore: n.shape", y.shape, n.shape, self.imodel.odim
                 y = y.copy() + n
             y_ = bounds_min_max(y.T, self.m_mins, self.m_maxs)
-            print self.__class__.__name__, "infer: y post", y_.shape, y.shape
+            # print self.__class__.__name__, "infer: y post", y_.shape, y.shape
             return y_.reshape((self.imodel.odim,))
                 
         elif out_dims == self.m_dims[len(self.m_dims)/2:]:  # dm = i(M, S, dS)
@@ -78,13 +78,13 @@ class LinearNetworkFORCEModel(SensorimotorModel):
     def predict_given_context(self, x, c, c_dims):
         """predict sensory consequence (s_{t+1} given sensory / environmental context (s_t) and motor (m_t)"""
         x_ = np.array([c + x]).T
-        print "x, c, c_dims", x, c, c_dims, x_
+        # print "x, c, c_dims", x, c, c_dims, x_
         y, h = self.fmodel_context.predict(x_)
         # return np.zeros((self.fmodel_context.odim, ))
         return y.reshape((self.fmodel_context.odim,))
         
     def update(self, m, s):
-        print self.__class__.__name__, "update(m, s)", m, s, self.imodel.y
+        # print self.__class__.__name__, "update(m, s)", m, s, self.imodel.y
         s_t   = np.array([s[:self.fmodel_context.idim/2]]).T / self.stats[1] # context
         s_tp1 = np.array([s[self.fmodel_context.idim/2:]]).T / self.stats[1] # current sensory state
         m_    = np.array([m]).T / self.stats[3]

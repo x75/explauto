@@ -34,11 +34,11 @@ low_dim_vel = make_pointmass_config(st_ndims = 3,
 
 low_dim_full = make_pointmass_config(st_ndims = 3,
                                 m_ndims = 1,
-                                s_ndims = 3,
-                                sensor_transform = np.eye(3),
+                                s_ndims = 2, # pos, vel
+                                sensor_transform = np.array([[1, 0, 0], [0, 1, 0]]), # np.eye(3),
                                 m_max = 1,
-                                s_mins = array([-1.0, -1.0, -1.0] * 3),
-                                s_maxs = array([ 1.0,  1.0,  1.0] * 3),
+                                s_mins = array([-1.0, -1.0]),
+                                s_maxs = array([ 1.0,  1.0]),
                                 mass = 1,
                                 sysnoise = 0.02,
                                 sensnoise = 0.02)
@@ -54,8 +54,8 @@ mid_dim_vel = make_pointmass_config(st_ndims = 9,
                                 s_mins = array([-1.0] *  3),
                                 s_maxs = array([ 1.0] *  3),
                                 mass = 1.0,
-                                sysnoise = 0.0,
-                                sensnoise = 0.0)
+                                sysnoise = 0.05,
+                                sensnoise = 0.05)
 
 mid_dim_full = make_pointmass_config(st_ndims = 9,
                                 m_ndims = 3,
