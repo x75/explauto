@@ -1,6 +1,8 @@
+"""explauto Environment for a robot (quadrotor) simulated with MORSE"""
+
 import numpy as np
 
-import subprocess
+import subprocess, time
 
 from ..environment import Environment
 
@@ -12,6 +14,15 @@ from nav_msgs.msg import Odometry
 from sensor_msgs.msg import Imu
 from std_msgs.msg import Float32MultiArray
 from tf.transformations import euler_from_quaternion, quaternion_from_euler
+
+def reset_simulation():
+    """reset MORSE simulation by teleporting robot back to initial position"""
+    # call a pymorse (py3 only) script externally to do the teleporting and simulation control
+    py3env = {"PYTHONPATH": "/usr/local/lib/python3/dist-packages"}
+    ret = subprocess.Popen(["python3",  "../im/im_quadrotor_controller_reset_pymorse.py"], env = py3env)
+    # wait for reset to happen
+    time.sleep(0.5)
+    return
 
 class CopterMorseEnvironment(Environment):
     def __init__(self, m_ndims, s_ndims, m_mins, m_maxs, s_mins, s_maxs, sensor_transform):
@@ -67,6 +78,7 @@ class CopterMorseEnvironment(Environment):
 
     def reset(self):
         self.x = self.x0.copy()
+        reset_simulation()
         
     def compute_sensori_effect(self, m):
         print("m", m)
