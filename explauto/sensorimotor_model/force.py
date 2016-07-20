@@ -60,10 +60,12 @@ class LinearNetworkFORCEModel(SensorimotorModel):
             # print "x", x#, "y", y
             y, h = self.imodel.predict(x)
             y *= self.stats[3]
+            y = np.clip(y, 0.2, 0.8)
             # print self.__class__.__name__, "infer: y pre", y
             if self.mode == "explore":
                 # print self.__class__.__name__, "infer: explore: y.shape", y.shape, type(self.sigma_expl)
-                n = np.random.normal(y, 1) * self.sigma_expl
+                # n = np.random.normal(y, 1) * self.sigma_expl
+                n = np.random.normal(0, 1, y.shape) * self.sigma_expl
                 # print self.__class__.__name__, "infer: explore: n.shape", y.shape, n.shape, self.imodel.odim
                 y = y.copy() + n
             y_ = bounds_min_max(y.T, self.m_mins, self.m_maxs)
@@ -104,8 +106,8 @@ class LinearNetworkFORCEModel(SensorimotorModel):
         self.ffiterr         = self.fmodel.fitFORCE(X_fwd, Y_fwd)
         self.ffiterr_context = self.fmodel_context.fitFORCE(X_fwd_context, Y_fwd_context)
         self.ifiterr         = self.imodel.fitFORCE(X_inv, Y_inv, reverse = False)
-        # ifiterr = self.imodel.fitRLS(X_inv, Y_inv)
-        # ifiterr = self.imodel.fit(X_inv, Y_inv)
+        # self.ifiterr = self.imodel.fitRLS(X_inv, Y_inv)
+        # self.ifiterr = self.imodel.fit(X_inv, Y_inv)
         # print("fiterr f, i", ffiterr, ifiterr, np.linalg.norm(self.imodel.W_o, 2))
         # return ffiterr, ifiterr
         
@@ -117,8 +119,43 @@ configurations = {
         # "modelsize": 300,
         # "modelsize": 100,
         # "sigma_explo_ratio": 0.8, # 0.8 yields best results so far
-        "sigma_explo_ratio": 0.1,   # should also work with 0.3 or less, let's try
+        "sigma_explo_ratio": 0.1,   # point mass yeah!!! should also work with 0.3 or less, let's try
+        # "sigma_explo_ratio": 0.2,   # morse coptershould also work with 0.3 or less, let's try
         "theta_state": 1e-4,
+        # "theta_state": 1e-2,
+        # "eta": 1e-2,
+        # "input_scaling": 5e-2,
+        # "input_scaling": 1e-1,
+        "input_scaling": 1,
+        "alpha": 1.0
+    },
+    "default_pm": {
+        # "modelsize": 1000,
+        "modelsize": 600,
+        # "modelsize": 300,
+        # "modelsize": 100,
+        # "sigma_explo_ratio": 0.8, # 0.8 yields best results so far
+        "sigma_explo_ratio": 0.1,   # point mass yeah!!! should also work with 0.3 or less, let's try
+        # "sigma_explo_ratio": 0.2,   # morse coptershould also work with 0.3 or less, let's try
+        "theta_state": 1e-4,
+        # "theta_state": 1e-2,
+        # "eta": 1e-2,
+        # "input_scaling": 5e-2,
+        # "input_scaling": 1e-1,
+        "input_scaling": 1,
+        "alpha": 1.0
+    },
+    "default_morse_copter": {
+        # "modelsize": 1000,
+        "modelsize": 600,
+        # "modelsize": 300,
+        # "modelsize": 100,
+        # "sigma_explo_ratio": 0.8, # 0.8 yields best results so far
+        # "sigma_explo_ratio": 0.1,   # point mass yeah!!! should also work with 0.3 or less, let's try
+        "sigma_explo_ratio": 0.5,   # morse coptershould also work with 0.3 or less, let's try
+        "theta_state": 1e-2,
+        # "theta_state": 1e-2,
+        # "eta": 1e-2,
         # "input_scaling": 5e-2,
         # "input_scaling": 1e-1,
         "input_scaling": 1,

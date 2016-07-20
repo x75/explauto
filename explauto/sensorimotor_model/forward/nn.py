@@ -20,7 +20,7 @@ class NNForwardModel(ForwardModel):
         @param sigma_t  sigma for the time distance.
         @param nn       the number of nearest neighbors to consider for regression.
         """
-        self.k = 1
+        self.k = 5
         ForwardModel.__init__(self, dim_x, dim_y, sigma=sigma, **kwargs)
         
     def predict_y(self, xq, **kwargs):
