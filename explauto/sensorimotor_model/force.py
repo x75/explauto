@@ -60,7 +60,7 @@ class LinearNetworkFORCEModel(SensorimotorModel):
             # print "x", x#, "y", y
             y, h = self.imodel.predict(x)
             y *= self.stats[3]
-            y = np.clip(y, 0.2, 0.8)
+            # y = np.clip(y, 0.2, 0.8)
             # print self.__class__.__name__, "infer: y pre", y
             if self.mode == "explore":
                 # print self.__class__.__name__, "infer: explore: y.shape", y.shape, type(self.sigma_expl)
@@ -152,7 +152,8 @@ configurations = {
         # "modelsize": 100,
         # "sigma_explo_ratio": 0.8, # 0.8 yields best results so far
         # "sigma_explo_ratio": 0.1,   # point mass yeah!!! should also work with 0.3 or less, let's try
-        "sigma_explo_ratio": 0.5,   # morse coptershould also work with 0.3 or less, let's try
+        # "sigma_explo_ratio": np.array([0.1, 0.1, 0.1, 0.2]),
+        "sigma_explo_ratio": 0.2,   # morse coptershould also work with 0.3 or less, let's try
         "theta_state": 1e-2,
         # "theta_state": 1e-2,
         # "eta": 1e-2,

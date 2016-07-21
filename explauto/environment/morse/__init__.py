@@ -18,8 +18,8 @@ copter_attitude = make_morse_conf(
     m_ndims = 4, # roll, pitch, yaw, thrust
     s_ndims = 5, # vx, vy, vz, np.cos(yaw), np.sin(yaw)
     sensor_transform = eye(5),
-    m_mins = array([-pi/4, -pi/4, -pi, 0.3]),
-    m_maxs = array([ pi/4,  pi/4,  pi, 0.7]),
+    m_mins = array([-pi/16, -pi/16, -pi/16, 0.3]),
+    m_maxs = array([ pi/16,  pi/16,  pi/16, 0.7]),
     s_mins = array([-1, -1, -1, -1, -1]),
     s_maxs = array([ 1,  1,  1,  1,  1])
     )

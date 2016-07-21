@@ -36,7 +36,7 @@ class CopterMorseEnvironment(Environment):
         
         self.x0 = np.zeros((self.s_ndims, ))
         self.x = self.x0.copy()
-        self.x_ = np.zeros((3, ))
+        self.x_ = np.zeros((5, ))
         self.current_context = np.dot(self.sensor_transform, self.x).flatten()
 
         # ros stuff
@@ -67,9 +67,12 @@ class CopterMorseEnvironment(Environment):
             msg.pose.pose.orientation.z,
             msg.pose.pose.orientation.w
             ]))
+        # print "euler_angles", euler_angles
         self.x[3] = np.cos(euler_angles[2])
         self.x[4] = np.sin(euler_angles[2])
 
+        self.x_[0] = msg.pose.pose.position.x
+        self.x_[1] = msg.pose.pose.position.y
         self.x_[2] = msg.pose.pose.position.z
         
     def cb_imu(self, msg):
