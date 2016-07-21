@@ -153,13 +153,13 @@ configurations = {
         # "sigma_explo_ratio": 0.8, # 0.8 yields best results so far
         # "sigma_explo_ratio": 0.1,   # point mass yeah!!! should also work with 0.3 or less, let's try
         # "sigma_explo_ratio": np.array([0.1, 0.1, 0.1, 0.2]),
-        "sigma_explo_ratio": 0.2,   # morse coptershould also work with 0.3 or less, let's try
+        "sigma_explo_ratio": 0.1,   # morse coptershould also work with 0.3 or less, let's try
         "theta_state": 1e-2,
         # "theta_state": 1e-2,
         # "eta": 1e-2,
         # "input_scaling": 5e-2,
         # "input_scaling": 1e-1,
-        "input_scaling": 1,
+        "input_scaling": 0.5,
         "alpha": 1.0
     },
     "medium": {
