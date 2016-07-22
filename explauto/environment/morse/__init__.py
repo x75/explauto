@@ -20,6 +20,8 @@ copter_attitude = make_morse_conf(
     sensor_transform = eye(5),
     m_mins = array([-pi/16, -pi/16, -pi/16, 0.3]),
     m_maxs = array([ pi/16,  pi/16,  pi/16, 0.7]),
+    # m_mins = array([-pi/8, -pi/8, -pi/16, 0.3]),
+    # m_maxs = array([ pi/8,  pi/8,  pi/16, 0.7]),
     s_mins = array([-1, -1, -1, -1, -1]),
     s_maxs = array([ 1,  1,  1,  1,  1])
     )

@@ -7,10 +7,11 @@ from explauto.utils import bounds_min_max
 
 sys.path.insert(0, "/home/src/QK/smp/imol")
 
-from imol.models import LinearNetwork
+from imol.models import LinearNetwork, ReservoirNetwork
 
 class LinearNetworkFORCEModel(SensorimotorModel):
-    def __init__(self, conf, modelsize = 100, sigma_explo_ratio=0.1, alpha = 1.0, eta = 1e-3, theta_state = 1e-2, input_scaling = 1.0):
+    def __init__(self, conf, modelsize = 100, sigma_explo_ratio=0.1, alpha = 1.0, eta = 1e-3, theta_state = 1e-2, input_scaling = 1.0,
+                 g = 0.0, tau = 0.1, mtau = False):
         SensorimotorModel.__init__(self, conf)
         for attr in ['m_ndims', 's_ndims', 'm_dims', 's_dims', 'bounds', 'm_mins', 'm_maxs']:
             setattr(self, attr, getattr(conf, attr))
@@ -22,19 +23,35 @@ class LinearNetworkFORCEModel(SensorimotorModel):
         print "mfeats", mfeats, "sfeats", sfeats
 
         self.modelsize = modelsize
-        # this is the forward model standard edition
-        self.fmodel = LinearNetwork(modelsize = self.modelsize, idim = len(mfeats), odim = len(sfeats), alpha = alpha,
-                                    eta = eta, theta_state = theta_state, input_scaling = input_scaling)
-        self.ffiterr = np.zeros((self.s_ndims,))        
-        # this is the forward model considering context
-        self.fmodel_context = LinearNetwork(modelsize = self.modelsize, idim = len(sfeats)/2 + len(mfeats), odim = len(sfeats), alpha = alpha,
-                                    eta = eta, theta_state = theta_state, input_scaling = input_scaling)
-        self.ffiterr_context = np.zeros((self.s_ndims,))
-        # this is the inverse model, this works straightaway with context information
-        self.imodel = LinearNetwork(modelsize = self.modelsize, idim = len(sfeats), odim = len(mfeats), alpha = alpha,
-                                    eta = eta, theta_state = theta_state, input_scaling = input_scaling)
-        self.ifiterr = np.zeros((self.m_ndims,))
+        self.g = g
         
+        if self.g > 0.0:
+            # this is the forward model standard edition
+            self.fmodel = ReservoirNetwork(modelsize = self.modelsize, idim = len(mfeats), odim = len(sfeats), alpha = alpha,
+                                    eta = eta, theta_state = theta_state, input_scaling = input_scaling, g = g, tau = tau, mtau = mtau)
+            # this is the forward model considering context
+            self.fmodel_context = ReservoirNetwork(modelsize = self.modelsize, idim = len(sfeats)/2 + len(mfeats), odim = len(sfeats), alpha = alpha,
+                                    eta = eta, theta_state = theta_state, input_scaling = input_scaling, g = g, tau = tau, mtau = mtau)
+            # this is the inverse model, this works straightaway with context information
+            self.imodel = ReservoirNetwork(modelsize = self.modelsize, idim = len(sfeats), odim = len(mfeats), alpha = alpha,
+                                    eta = eta, theta_state = theta_state, input_scaling = input_scaling, g = g, tau = tau, mtau = mtau)
+        else:
+            # this is the forward model standard edition
+            self.fmodel = LinearNetwork(modelsize = self.modelsize, idim = len(mfeats), odim = len(sfeats), alpha = alpha,
+                                    eta = eta, theta_state = theta_state, input_scaling = input_scaling)
+            # this is the forward model considering context
+            self.fmodel_context = LinearNetwork(modelsize = self.modelsize, idim = len(sfeats)/2 + len(mfeats), odim = len(sfeats), alpha = alpha,
+                                    eta = eta, theta_state = theta_state, input_scaling = input_scaling)
+            # this is the inverse model, this works straightaway with context information
+            self.imodel = LinearNetwork(modelsize = self.modelsize, idim = len(sfeats), odim = len(mfeats), alpha = alpha,
+                                    eta = eta, theta_state = theta_state, input_scaling = input_scaling)
+
+        print "models", self.g, self.fmodel, self.fmodel_context, self.imodel
+            
+        self.ffiterr = np.zeros((self.s_ndims,))        
+        self.ffiterr_context = np.zeros((self.s_ndims,))
+        self.ifiterr = np.zeros((self.m_ndims,))
+            
         self.sigma_expl = ((conf.m_maxs - conf.m_mins) * float(sigma_explo_ratio)).reshape((self.imodel.odim,1))
         print "self.sigma_expl", self.sigma_expl.shape
 
@@ -160,6 +177,25 @@ configurations = {
         # "input_scaling": 5e-2,
         # "input_scaling": 1e-1,
         "input_scaling": 0.5,
+        "alpha": 1.0
+    },
+    "recurrent_morse_copter": {
+        # "modelsize": 1000,
+        "modelsize": 600,
+        # "modelsize": 300,
+        # "modelsize": 100,
+        # "sigma_explo_ratio": 0.8, # 0.8 yields best results so far
+        # "sigma_explo_ratio": 0.1,   # point mass yeah!!! should also work with 0.3 or less, let's try
+        # "sigma_explo_ratio": np.array([0.1, 0.1, 0.1, 0.2]),
+        "sigma_explo_ratio": 0.2,   # morse coptershould also work with 0.3 or less, let's try
+        "theta_state": 1e-2,
+        "g": 0.7,
+        "tau": 0.2,
+        # "theta_state": 1e-2,
+        # "eta": 1e-2,
+        # "input_scaling": 5e-2,
+        # "input_scaling": 1e-1,
+        "input_scaling": 0.5 * 5,
         "alpha": 1.0
     },
     "medium": {

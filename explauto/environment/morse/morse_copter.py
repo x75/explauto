@@ -49,8 +49,12 @@ class CopterMorseEnvironment(Environment):
             
         self.attctrl = Float32MultiArray()
         self.attctrl.data = [0 for i in range(self.m_ndims)]
+
+        self.euler = Float32MultiArray()
+        self.euler.data = [1, 0]
         
         self.pubs[ctrl_mode] = rospy.Publisher("/quad1/%s" % (ctrl_mode), ctrl_type, queue_size = 2)
+        self.pubs["euler"] = rospy.Publisher("/quad1/%s" % ("euler"), Float32MultiArray, queue_size = 2)
 
         self.subs["odometry"] = rospy.Subscriber("/quad1/odometry", Odometry, self.cb_odometry)
         self.subs["imu"] = rospy.Subscriber("/quad1/imu", Imu, self.cb_imu)
@@ -70,6 +74,9 @@ class CopterMorseEnvironment(Environment):
         # print "euler_angles", euler_angles
         self.x[3] = np.cos(euler_angles[2])
         self.x[4] = np.sin(euler_angles[2])
+
+        self.euler.data[0] = self.x[3]
+        self.euler.data[1] = self.x[4]
 
         self.x_[0] = msg.pose.pose.position.x
         self.x_[1] = msg.pose.pose.position.y
@@ -91,6 +98,7 @@ class CopterMorseEnvironment(Environment):
         print("m", m)
         self.attctrl.data = m.tolist()
         self.pubs["attctrl"].publish(self.attctrl)
+        self.pubs["euler"].publish(self.euler)
         self.r.sleep()
         print "self.x", self.x
         sensors = self.x.copy() # np.random.uniform(-1, 1, (self.s_ndims,))
