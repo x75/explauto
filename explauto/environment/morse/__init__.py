@@ -18,17 +18,30 @@ copter_attitude = make_morse_conf(
     m_ndims = 4, # roll, pitch, yaw, thrust
     s_ndims = 5, # vx, vy, vz, np.cos(yaw), np.sin(yaw)
     sensor_transform = eye(5),
-    m_mins = array([-pi/16, -pi/16, -pi/16, 0.3]),
-    m_maxs = array([ pi/16,  pi/16,  pi/16, 0.7]),
-    # m_mins = array([-pi/8, -pi/8, -pi/16, 0.3]),
-    # m_maxs = array([ pi/8,  pi/8,  pi/16, 0.7]),
+    m_mins = array([-pi/16.0, -pi/16.0, -pi/8.0, 0.3]),
+    m_maxs = array([ pi/16.0,  pi/16.0,  pi/8.0, 0.7]),
+    # m_mins = array([-pi/8.0, -pi/8.0, -pi/8.0, 0.3]),
+    # m_maxs = array([ pi/8.0,  pi/8.0,  pi/8.0, 0.7]),
     s_mins = array([-1, -1, -1, -1, -1]),
     s_maxs = array([ 1,  1,  1,  1,  1])
+    )
+
+copter_attitude_full = make_morse_conf(
+    m_ndims = 4, # roll, pitch, yaw, thrust
+    s_ndims = 15, # px, py, pz, vx, vy, vz, np.cos(roll), np.sin(roll), np.cos(pitch), np.sin(pitch), np.cos(yaw), np.sin(yaw), p, q, r
+    sensor_transform = eye(15),
+    m_mins = array([-pi/16.0, -pi/16.0, -pi/8.0, 0.3]),
+    m_maxs = array([ pi/16.0,  pi/16.0,  pi/8.0, 0.7]),
+    # m_mins = array([-pi/8.0, -pi/8.0, -pi/8.0, 0.3]),
+    # m_maxs = array([ pi/8.0,  pi/8.0,  pi/8.0, 0.7]),
+    s_mins = array([-10, -10,   0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -10, -10, -10]),
+    s_maxs = array([ 10,  10,  10,  1,  1,  1,  1,  1,  1,  1,  1,  1,  10,  10,  10])
     )
 
 environment = CopterMorseEnvironment
 configurations = {
     "copter_attitude": copter_attitude,
+    "copter_attitude_full": copter_attitude_full
     }
 
 def testcases(config_str, n_samples=100):

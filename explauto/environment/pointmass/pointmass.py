@@ -48,6 +48,7 @@ class PointmassEnvironment(Environment):
         # print "u", u
         # FIXME: insert motor transfer function
         a = (u/self.mass).reshape((self.world_dim, 1))
+        a += np.random.normal(0.05, 0.01, a.shape)
 
         # # world modification
         # if np.any(self.x[:self.world_dim] > 0):

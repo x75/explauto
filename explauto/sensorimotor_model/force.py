@@ -11,7 +11,7 @@ from imol.models import LinearNetwork, ReservoirNetwork
 
 class LinearNetworkFORCEModel(SensorimotorModel):
     def __init__(self, conf, modelsize = 100, sigma_explo_ratio=0.1, alpha = 1.0, eta = 1e-3, theta_state = 1e-2, input_scaling = 1.0,
-                 g = 0.0, tau = 0.1, mtau = False):
+                 g = 0.0, tau = 0.1, mtau = False, bias_scaling = 0.0):
         SensorimotorModel.__init__(self, conf)
         for attr in ['m_ndims', 's_ndims', 'm_dims', 's_dims', 'bounds', 'm_mins', 'm_maxs']:
             setattr(self, attr, getattr(conf, attr))
@@ -28,23 +28,29 @@ class LinearNetworkFORCEModel(SensorimotorModel):
         if self.g > 0.0:
             # this is the forward model standard edition
             self.fmodel = ReservoirNetwork(modelsize = self.modelsize, idim = len(mfeats), odim = len(sfeats), alpha = alpha,
-                                    eta = eta, theta_state = theta_state, input_scaling = input_scaling, g = g, tau = tau, mtau = mtau)
+                                    eta = eta, theta_state = theta_state, input_scaling = input_scaling, g = g, tau = tau, mtau = mtau,
+                                    bias_scaling = bias_scaling)
             # this is the forward model considering context
             self.fmodel_context = ReservoirNetwork(modelsize = self.modelsize, idim = len(sfeats)/2 + len(mfeats), odim = len(sfeats), alpha = alpha,
-                                    eta = eta, theta_state = theta_state, input_scaling = input_scaling, g = g, tau = tau, mtau = mtau)
+                                    eta = eta, theta_state = theta_state, input_scaling = input_scaling, g = g, tau = tau, mtau = mtau,
+                                    bias_scaling = bias_scaling)
             # this is the inverse model, this works straightaway with context information
             self.imodel = ReservoirNetwork(modelsize = self.modelsize, idim = len(sfeats), odim = len(mfeats), alpha = alpha,
-                                    eta = eta, theta_state = theta_state, input_scaling = input_scaling, g = g, tau = tau, mtau = mtau)
+                                    eta = eta, theta_state = theta_state, input_scaling = input_scaling, g = g, tau = tau, mtau = mtau,
+                                    bias_scaling = bias_scaling)
         else:
             # this is the forward model standard edition
             self.fmodel = LinearNetwork(modelsize = self.modelsize, idim = len(mfeats), odim = len(sfeats), alpha = alpha,
-                                    eta = eta, theta_state = theta_state, input_scaling = input_scaling)
+                                    eta = eta, theta_state = theta_state, input_scaling = input_scaling,
+                                    bias_scaling = bias_scaling)
             # this is the forward model considering context
             self.fmodel_context = LinearNetwork(modelsize = self.modelsize, idim = len(sfeats)/2 + len(mfeats), odim = len(sfeats), alpha = alpha,
-                                    eta = eta, theta_state = theta_state, input_scaling = input_scaling)
+                                    eta = eta, theta_state = theta_state, input_scaling = input_scaling,
+                                    bias_scaling = bias_scaling)
             # this is the inverse model, this works straightaway with context information
             self.imodel = LinearNetwork(modelsize = self.modelsize, idim = len(sfeats), odim = len(mfeats), alpha = alpha,
-                                    eta = eta, theta_state = theta_state, input_scaling = input_scaling)
+                                    eta = eta, theta_state = theta_state, input_scaling = input_scaling,
+                                    bias_scaling = bias_scaling)
 
         print "models", self.g, self.fmodel, self.fmodel_context, self.imodel
             
@@ -74,7 +80,7 @@ class LinearNetworkFORCEModel(SensorimotorModel):
             # print "x", x
             # print "inverse", len(in_dims), in_dims, out_dims
             x = np.array([x]).T / self.stats[1]
-            # print "x", x#, "y", y
+            # print "x.shape", x.shape#, "y", y
             y, h = self.imodel.predict(x)
             y *= self.stats[3]
             # y = np.clip(y, 0.2, 0.8)
@@ -160,6 +166,7 @@ configurations = {
         # "input_scaling": 5e-2,
         # "input_scaling": 1e-1,
         "input_scaling": 1.0,
+        "bias_scaling": 0.1,
         "alpha": 1.0
     },
     "recurrent_default_pm": {
@@ -195,6 +202,7 @@ configurations = {
         # "input_scaling": 5e-2,
         # "input_scaling": 1e-1,
         "input_scaling": 0.5,
+        "bias_scaling": 0.2,
         "alpha": 1.0
     },
     "recurrent_morse_copter": {
@@ -208,12 +216,13 @@ configurations = {
         "sigma_explo_ratio": 0.2,   # morse coptershould also work with 0.3 or less, let's try
         "theta_state": 1e-2,
         "g": 0.7,
-        "tau": 0.2,
+        "tau": 0.5,
         # "theta_state": 1e-2,
         # "eta": 1e-2,
         # "input_scaling": 5e-2,
         # "input_scaling": 1e-1,
         "input_scaling": 0.5 * 5,
+        "bias_scaling": 0.3,
         "alpha": 1.0
     },
     "medium": {

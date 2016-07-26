@@ -35,8 +35,11 @@ class CopterMorseEnvironment(Environment):
         self.sensor_transform = sensor_transform
         
         self.x0 = np.zeros((self.s_ndims, ))
+        # state / sensors for particular sensorimotor model realization
         self.x = self.x0.copy()
+        # helper state for indirect effects ;)
         self.x_ = np.zeros((5, ))
+        # copy
         self.current_context = np.dot(self.sensor_transform, self.x).flatten()
 
         # ros stuff
@@ -95,7 +98,7 @@ class CopterMorseEnvironment(Environment):
         reset_simulation()
         
     def compute_sensori_effect(self, m):
-        print("m", m)
+        print("%s.%s: m" % (self.__class__.__name__, "compute_sensori_effect"), m)
         self.attctrl.data = m.tolist()
         self.pubs["attctrl"].publish(self.attctrl)
         self.pubs["euler"].publish(self.euler)
@@ -105,3 +108,42 @@ class CopterMorseEnvironment(Environment):
         # print("%s, %s" % (self.__class__.__name__, sensors))
         self.current_context = sensors.copy()
         return sensors
+
+class CopterMorseEnvironmentFull(CopterMorseEnvironment):
+    def __init__(self, m_ndims, s_ndims, m_mins, m_maxs, s_mins, s_maxs, sensor_transform):
+        CopterMorseEnvironment.__init__(self, m_ndims, s_ndims, m_mins, m_maxs, s_mins, s_maxs, sensor_transform)
+        
+    def cb_odometry(self, msg):
+        assert self.s_ndims == 15 # 3 pos, 3 vel, 3 cos euler, 3 sin euler, 3 ang rates
+        # print "odom", msg
+        # print "msg.twist.twist.linear.z", msg.twist.twist.linear.z
+        self.x[0] = msg.pose.pose.position.x
+        self.x[1] = msg.pose.pose.position.y
+        self.x[2] = msg.pose.pose.position.z
+        self.x[3] = msg.twist.twist.linear.x
+        self.x[4] = msg.twist.twist.linear.y
+        self.x[5] = msg.twist.twist.linear.z
+        euler_angles = np.array(euler_from_quaternion([
+            msg.pose.pose.orientation.x,
+            msg.pose.pose.orientation.y,
+            msg.pose.pose.orientation.z,
+            msg.pose.pose.orientation.w
+            ]))
+        # print "euler_angles", euler_angles
+        self.x[6] = np.cos(euler_angles[0])
+        self.x[7] = np.sin(euler_angles[0])
+        self.x[8] = np.cos(euler_angles[1])
+        self.x[9] = np.sin(euler_angles[1])
+        self.x[10] = np.cos(euler_angles[2])
+        self.x[11] = np.sin(euler_angles[2])
+        
+        self.x[12] = msg.twist.twist.angular.x
+        self.x[13] = msg.twist.twist.angular.y
+        self.x[14] = msg.twist.twist.angular.z
+
+        # self.euler.data[0] = self.x[3]
+        # self.euler.data[1] = self.x[4]
+
+        # self.x_[0] = msg.pose.pose.position.x
+        # self.x_[1] = msg.pose.pose.position.y
+        # self.x_[2] = msg.pose.pose.position.z
