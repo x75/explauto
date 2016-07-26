@@ -159,7 +159,25 @@ configurations = {
         # "eta": 1e-2,
         # "input_scaling": 5e-2,
         # "input_scaling": 1e-1,
-        "input_scaling": 1,
+        "input_scaling": 1.0,
+        "alpha": 1.0
+    },
+    "recurrent_default_pm": {
+        # "modelsize": 1000,
+        "modelsize": 600,
+        # "modelsize": 300,
+        # "modelsize": 100,
+        # "sigma_explo_ratio": 0.8, # 0.8 yields best results so far
+        "sigma_explo_ratio": 0.1,   # point mass yeah!!! should also work with 0.3 or less, let's try
+        # "sigma_explo_ratio": 0.2,   # morse coptershould also work with 0.3 or less, let's try
+        "theta_state": 1e-2,
+        "g": 0.9,
+        "tau": 0.5,
+        # "theta_state": 1e-2,
+        # "eta": 1e-2,
+        # "input_scaling": 5e-2,
+        # "input_scaling": 1e-1,
+        "input_scaling": 1.0,
         "alpha": 1.0
     },
     "default_morse_copter": {
