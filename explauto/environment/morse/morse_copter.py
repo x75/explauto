@@ -98,12 +98,12 @@ class CopterMorseEnvironment(Environment):
         reset_simulation()
         
     def compute_sensori_effect(self, m):
-        print("%s.%s: m" % (self.__class__.__name__, "compute_sensori_effect"), m)
+        # print("%s.%s: m" % (self.__class__.__name__, "compute_sensori_effect"), m)
         self.attctrl.data = m.tolist()
         self.pubs["attctrl"].publish(self.attctrl)
         self.pubs["euler"].publish(self.euler)
         self.r.sleep()
-        print "self.x", self.x
+        # print "self.x", self.x
         sensors = self.x.copy() # np.random.uniform(-1, 1, (self.s_ndims,))
         # print("%s, %s" % (self.__class__.__name__, sensors))
         self.current_context = sensors.copy()
