@@ -3,14 +3,14 @@ from numpy import random
 import numpy as np
 from copy import copy
 
-import pointmasslib
+# import pointmasslib
 
 from ..environment import Environment
 
 from ...utils import bounds_min_max
 
 class PointmassEnvironment(Environment):
-    def __init__(self, st_ndims, m_ndims, s_ndims, sensor_transform, m_mins, m_maxs, s_mins, s_maxs, sysnoise = 0.0, sensnoise = 0.0, force_max = 1, mass = 1.0, dt = 0.1):
+    def __init__(self, st_ndims, m_ndims, s_ndims, sensor_transform, m_mins, m_maxs, s_mins, s_maxs, sysnoise = 0.0, sensnoise = 0.0, force_max = 1, mass = 1.0, dt = 0.1, doRos = False):
         Environment.__init__(self, m_mins, m_maxs, s_mins, s_maxs)
 
         # FIXME: dimensions
@@ -38,6 +38,17 @@ class PointmassEnvironment(Environment):
         self.current_context = np.dot(self.sensor_transform, self.x).flatten()
         self.cnt = 0
 
+        self.doRos = doRos
+        
+        if self.doRos:
+            import rospy
+            from std_msgs.msg import Float32MultiArray
+            rospy.init_node("pointmass_environment")
+            self.pubs = {}
+            self.pubs["pos"] = rospy.Publisher("/robot/0/pos", Float32MultiArray)
+            self.msgs = {}
+            self.msgs["pos"] = Float32MultiArray()
+        
     def compute_motor_command(self, ag_state):
         return bounds_min_max(ag_state, self.conf.m_mins, self.conf.m_maxs)
 
@@ -71,6 +82,13 @@ class PointmassEnvironment(Environment):
         self.x[self.world_dim*2:] = a.copy()
 
         self.x += self.sysnoise * random.randn(self.x.shape[0], self.x.shape[1])
+
+        if self.doRos:
+            self.msgs["pos"].data = []
+            # print self.x.tolist()
+            self.msgs["pos"].data = (self.x * 0.1).flatten().tolist()
+            self.pubs["pos"].publish(self.msgs["pos"])
+        
         self.cnt += 1
         
         # return x

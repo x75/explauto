@@ -7,7 +7,7 @@ from ...exceptions import ExplautoNoTestCasesError
 from .pointmass import PointmassEnvironment
 
 
-def make_pointmass_config(st_ndims, m_ndims, s_ndims, sensor_transform, m_max, s_mins, s_maxs, mass, sysnoise, sensnoise):
+def make_pointmass_config(st_ndims, m_ndims, s_ndims, sensor_transform, m_max, s_mins, s_maxs, mass, sysnoise, sensnoise, doRos = False):
     return dict(st_ndims = st_ndims,
                 m_ndims = m_ndims,
                 s_ndims = s_ndims,
@@ -18,7 +18,8 @@ def make_pointmass_config(st_ndims, m_ndims, s_ndims, sensor_transform, m_max, s
                 s_maxs=s_maxs,
                 mass=mass,
                 sysnoise = sysnoise,
-                sensnoise = sensnoise
+                sensnoise = sensnoise,
+                doRos = doRos
     )
 
 low_dim_vel = make_pointmass_config(st_ndims = 3,
@@ -54,8 +55,9 @@ mid_dim_vel = make_pointmass_config(st_ndims = 9,
                                 s_mins = array([-1.0] *  3),
                                 s_maxs = array([ 1.0] *  3),
                                 mass = 1.0,
-                                sysnoise = 0.05,
-                                sensnoise = 0.05)
+                                sysnoise = 0.005,
+                                sensnoise = 0.005,
+                                doRos = True)
 
 mid_dim_full = make_pointmass_config(st_ndims = 9,
                                 m_ndims = 3,
