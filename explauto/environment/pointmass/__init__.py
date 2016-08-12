@@ -57,7 +57,7 @@ mid_dim_vel = make_pointmass_config(st_ndims = 9,
                                 mass = 1.0,
                                 sysnoise = 0.005,
                                 sensnoise = 0.005,
-                                doRos = True)
+                                doRos = False)
 
 mid_dim_full = make_pointmass_config(st_ndims = 9,
                                 m_ndims = 3,

@@ -128,7 +128,7 @@ class LinearNetworkFORCEModel(SensorimotorModel):
         # print "X_inv", X_inv, "Y_inv", Y_inv, self.imodel.y
         self.ffiterr         = self.fmodel.fitFORCE(X_fwd, Y_fwd)
         self.ffiterr_context = self.fmodel_context.fitFORCE(X_fwd_context, Y_fwd_context)
-        self.ifiterr         = self.imodel.fitFORCE(X_inv, Y_inv, reverse = False)
+        self.ifiterr         = self.imodel.fitFORCE(X_inv, Y_inv, reverse = False, activate = True)
         # self.ifiterr = self.imodel.fitRLS(X_inv, Y_inv)
         # self.ifiterr = self.imodel.fit(X_inv, Y_inv)
         # print("fiterr f, i", ffiterr, ifiterr, np.linalg.norm(self.imodel.W_o, 2))
@@ -178,8 +178,8 @@ configurations = {
         "sigma_explo_ratio": 0.1,   # point mass yeah!!! should also work with 0.3 or less, let's try
         # "sigma_explo_ratio": 0.2,   # morse coptershould also work with 0.3 or less, let's try
         "theta_state": 1e-2,
-        "g": 0.9,
-        "tau": 0.5,
+        "g": 0.99,
+        "tau": 0.8,
         # "theta_state": 1e-2,
         # "eta": 1e-2,
         # "input_scaling": 5e-2,
