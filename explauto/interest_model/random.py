@@ -125,7 +125,6 @@ class MiscRandomInterest(RandomInterest):
 
     def interest(self): return self.current_interest
 
-
 class RandomInterestDynamic(RandomInterest):
     """Like RandomInterest but only sample new goal after _interval_ steps
 

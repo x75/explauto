@@ -106,6 +106,7 @@ class Experiment(Observer):
         self.current_step += 1
 
         if self.current_step in self.eval_at and self.evaluation is not None:
+            print "evaluating at step# %d" % self.current_step
             self.log.eval_errors.append(self.evaluation.evaluate())
 
         # Clear messages received from the evaluation
@@ -146,7 +147,7 @@ class Experiment(Observer):
             topic, msg = self.notifications.get()
             self.log.add(topic, msg)
 
-    def evaluate_at(self, eval_at, testcases, mode=None):
+    def evaluate_at(self, eval_at, testcases, mode=None, eval_episode_len = 1):
         """ Sets the evaluation interation indices.
 
             :param list eval_at: iteration indices where an evaluation should be performed
@@ -163,7 +164,7 @@ class Experiment(Observer):
                 mode = self.context_mode["mode"]
                 
 
-        self.evaluation = Evaluation(self.ag, self.env, testcases, mode=mode)
+        self.evaluation = Evaluation(self.ag, self.env, testcases, mode=mode, eval_episode_len = eval_episode_len)
         for test in testcases:
             self.log.add('testcases', test)
 

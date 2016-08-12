@@ -3,7 +3,7 @@ from numpy import linalg
 
 
 class Evaluation(object):
-    def __init__(self, ag, env, testcases, mode='inverse'):
+    def __init__(self, ag, env, testcases, mode='inverse', eval_episode_len = 1):
         self.ag = ag
         self.env = env
         self.mode = mode
@@ -12,6 +12,7 @@ class Evaluation(object):
             raise ValueError('mode should be "inverse" or "forward"',
                              '"general" predictions coming soon)')
         self.testcases = testcases
+        self.eval_episode_len = eval_episode_len
 
     def evaluate(self, n_tests_forward=None, testcases_forward=None):
         sm_mode = self.ag.sensorimotor_model.mode
@@ -45,15 +46,16 @@ class Evaluation(object):
             self.env.reset()
             for s_g in self.testcases:
                 self.env.reset()
-                
-                context = self.env.get_current_context()
-                in_dims = range(self.ag.conf.m_ndims, self.ag.conf.m_ndims + self.ag.conf.s_ndims)
-                out_dims = range(self.ag.conf.m_ndims)
-                m = self.ag.infer(in_dims, 
-                                out_dims, 
-                                np.array(context + list(s_g)))
-                s = self.env.update(m, reset=False)
-                errors.append(linalg.norm(s_g - s[len(context):]))
+
+                for i in range(self.eval_episode_len): # evaluate for given episode length, x75
+                    context = self.env.get_current_context()
+                    in_dims = range(self.ag.conf.m_ndims, self.ag.conf.m_ndims + self.ag.conf.s_ndims)
+                    out_dims = range(self.ag.conf.m_ndims)
+                    m = self.ag.infer(in_dims, 
+                                    out_dims, 
+                                    np.array(context + list(s_g)))
+                    s = self.env.update(m, reset=False)
+                    errors.append(linalg.norm(s_g - s[len(context):]))
         elif self.mode == 'forward':
             print 'forward prediction tests still in beta version, use with caution'
             if n_tests_forward is not None:

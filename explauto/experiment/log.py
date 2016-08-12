@@ -110,6 +110,7 @@ class ExperimentLog(object):
         ax.set_title('Test on ' + str(errors.shape[1]) + ' sensory goals')
         ax.set_xlabel('Number of sensorimotor experiments')
         ax.set_ylabel('Mean ' + ('squared' if squared_errors else '') + 'error')
+        # ax.set_yscale("log")
 
     def density_plot(self, ax, topic_dims, t=None,
                      res_x=40, res_y=40,
