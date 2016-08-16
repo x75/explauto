@@ -88,7 +88,14 @@ class LinearNetworkFORCEModel(SensorimotorModel):
             if self.mode == "explore":
                 # print self.__class__.__name__, "infer: explore: y.shape", y.shape, type(self.sigma_expl)
                 # n = np.random.normal(y, 1) * self.sigma_expl
-                n = np.random.normal(0, 1, y.shape) * self.sigma_expl
+                # gaussian exploration noise
+                # n = np.random.normal(0, 1, y.shape) * self.sigma_expl
+                # pareto exploration noise
+                if np.random.binomial(1, 0.5) > 0:
+                    n = np.random.pareto(1.5, y.shape) * self.sigma_expl
+                else:
+                    n = -1.0 * np.random.pareto(1.5, y.shape) * self.sigma_expl
+
                 # print self.__class__.__name__, "infer: explore: n.shape", y.shape, n.shape, self.imodel.odim
                 y = y.copy() + n
             y_ = bounds_min_max(y.T, self.m_mins, self.m_maxs)
