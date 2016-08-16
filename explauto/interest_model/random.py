@@ -125,26 +125,7 @@ class MiscRandomInterest(RandomInterest):
 
     def interest(self): return self.current_interest
 
-class RandomInterestDynamic(RandomInterest):
-    """Like RandomInterest but only sample new goal after _interval_ steps
-
-    for dynamic environments when you can't reach the goal in one step
-    """
-    def __init__(self, conf, expl_dims, interval = 100):
-        RandomInterest.__init__(self, conf, expl_dims)
-
-        self.cnt = 0
-        self.interval = interval
-        self.current_goal = rand_bounds(self.bounds).flatten()
-
-    def sample(self):
-        if self.cnt % self.interval == 0:
-            self.current_goal = rand_bounds(self.bounds).flatten()
-        self.cnt += 1
-        return self.current_goal
-
 interest_models = {'random': (RandomInterest, {'default': {}}),
                    'misc_random': (MiscRandomInterest, {'default': 
                                    {'competence_measure': competence_dist,
-                                    'win_size': 100}}),
-                   'random_dyn': (RandomInterestDynamic, {'default': {'interval': 100}})}
+                                    'win_size': 100}})}
