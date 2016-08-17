@@ -11,7 +11,7 @@ from imol.models import LinearNetwork, ReservoirNetwork
 
 class LinearNetworkFORCEModel(SensorimotorModel):
     def __init__(self, conf, modelsize = 100, sigma_explo_ratio=0.1, alpha = 1.0, eta = 1e-3, theta_state = 1e-2, input_scaling = 1.0,
-                 g = 0.0, tau = 0.1, mtau = False, bias_scaling = 0.0):
+                 g = 0.0, tau = 0.1, mtau = False, bias_scaling = 0.0, explo_noise_type = "gaussian"):
         SensorimotorModel.__init__(self, conf)
         for attr in ['m_ndims', 's_ndims', 'm_dims', 's_dims', 'bounds', 'm_mins', 'm_maxs']:
             setattr(self, attr, getattr(conf, attr))
@@ -57,7 +57,8 @@ class LinearNetworkFORCEModel(SensorimotorModel):
         self.ffiterr = np.zeros((self.s_ndims,))        
         self.ffiterr_context = np.zeros((self.s_ndims,))
         self.ifiterr = np.zeros((self.m_ndims,))
-            
+
+        self.explo_noise_type = explo_noise_type
         self.sigma_expl = ((conf.m_maxs - conf.m_mins) * float(sigma_explo_ratio)).reshape((self.imodel.odim,1))
         print "self.sigma_expl", self.sigma_expl.shape
 
@@ -84,22 +85,26 @@ class LinearNetworkFORCEModel(SensorimotorModel):
             y, h = self.imodel.predict(x)
             y *= self.stats[3]
             # y = np.clip(y, 0.2, 0.8)
-            # print self.__class__.__name__, "infer: y pre", y
+            print self.__class__.__name__, "infer: y pre", y
             if self.mode == "explore":
                 # print self.__class__.__name__, "infer: explore: y.shape", y.shape, type(self.sigma_expl)
                 # n = np.random.normal(y, 1) * self.sigma_expl
                 # gaussian exploration noise
-                # n = np.random.normal(0, 1, y.shape) * self.sigma_expl
+                if self.explo_noise_type == "gaussian":
+                    n = np.random.normal(0, 1, y.shape) * self.sigma_expl
+                    print "gaussain noise", n
                 # pareto exploration noise
-                if np.random.binomial(1, 0.5) > 0:
-                    n = np.random.pareto(1.5, y.shape) * self.sigma_expl
-                else:
-                    n = -1.0 * np.random.pareto(1.5, y.shape) * self.sigma_expl
+                elif self.explo_noise_type == "pareto":
+                    # if  > 0:
+                    n = ((np.random.binomial(1, 0.5) - 0.5) * 2) * np.random.pareto(1.5, y.shape) * self.sigma_expl
+                    # else:
+                    # n = -1.0 * np.random.pareto(1.5, y.shape) * self.sigma_expl
 
                 # print self.__class__.__name__, "infer: explore: n.shape", y.shape, n.shape, self.imodel.odim
                 y = y.copy() + n
+                print self.__class__.__name__, "infer: y post", y.shape, y
             y_ = bounds_min_max(y.T, self.m_mins, self.m_maxs)
-            # print self.__class__.__name__, "infer: y post", y_.shape, y.shape
+            print self.__class__.__name__, "infer: y bound", y_.shape, y_
             return y_.reshape((self.imodel.odim,))
                 
         elif out_dims == self.m_dims[len(self.m_dims)/2:]:  # dm = i(M, S, dS)
@@ -164,6 +169,8 @@ configurations = {
         "modelsize": 600,
         # "modelsize": 300,
         # "modelsize": 100,
+        # "explo_noise_type": "gaussian",
+        "explo_noise_type": "pareto",
         # "sigma_explo_ratio": 0.8, # 0.8 yields best results so far
         "sigma_explo_ratio": 0.1,   # point mass yeah!!! should also work with 0.3 or less, let's try
         # "sigma_explo_ratio": 0.2,   # morse coptershould also work with 0.3 or less, let's try
@@ -182,6 +189,8 @@ configurations = {
         # "modelsize": 300,
         # "modelsize": 100,
         # "sigma_explo_ratio": 0.8, # 0.8 yields best results so far
+        "explo_noise_type": "gaussian",
+        # "explo_noise_type": "pareto",
         "sigma_explo_ratio": 0.1,   # point mass yeah!!! should also work with 0.3 or less, let's try
         # "sigma_explo_ratio": 0.2,   # morse coptershould also work with 0.3 or less, let's try
         "theta_state": 1e-2,
@@ -199,6 +208,8 @@ configurations = {
         "modelsize": 600,
         # "modelsize": 300,
         # "modelsize": 100,
+        "explo_noise_type": "gaussian",
+        # "explo_noise_type": "pareto",
         # "sigma_explo_ratio": 0.8, # 0.8 yields best results so far
         # "sigma_explo_ratio": 0.1,   # point mass yeah!!! should also work with 0.3 or less, let's try
         # "sigma_explo_ratio": np.array([0.1, 0.1, 0.1, 0.2]),

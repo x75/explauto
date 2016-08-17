@@ -35,7 +35,7 @@ class RandomInterestDynamicCopter(RandomInterest):
 
         self.more_context = True # HACK
 
-        self.r_g     = [0, 0, 1] # at origin, 1m alt
+        self.r_g     = [1, 1, 1] # at origin, 1m alt
         self.r_g_yaw = np.pi * 0.0
         self.s_g     = [0, 0, -0.3, 1, 0] #
 
@@ -58,7 +58,7 @@ class RandomInterestDynamicCopter(RandomInterest):
             self.s_g[2] = x_[2] - self.r_g[2]            
 
         # lateral, with scheduling
-        if i > self.lattime:
+        if self.cnt > self.lattime:
             if self.goal_binary:
                 if x_[0] > self.r_g[0]:
                     self.s_g[0] = 0.2
@@ -90,7 +90,7 @@ class RandomInterestDynamicCopter(RandomInterest):
         # self.s_g = list(im_model.sample_given_context(context, range(context_mode["context_n_dims"])))
         # TODO: if pos.z != setpoint, self.s_g = vel towards setpoint
         print("self.s_g", type(self.s_g), self.s_g, self.r_g)
-        return self.self.s_g
+        return self.s_g
         
     def generate_real_goal(self):
         x_goals = [1.0, -1.0, 0.0]
