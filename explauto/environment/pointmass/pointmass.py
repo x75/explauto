@@ -18,9 +18,9 @@ class PointmassEnvironment(Environment):
         self.state_dim = st_ndims # pos, vel, acc
         self.world_dim = st_ndims / 3
         # - motor dimension
-        self.motor_dim = m_ndims
+        self.m_ndims = m_ndims
         # - sensor/observable dimension
-        self.sensor_dim = s_ndims
+        self.s_ndims = s_ndims
         self.sensor_transform = sensor_transform # state to sensor transformation matrix
                 
         print "self.conf", self.conf
@@ -33,6 +33,11 @@ class PointmassEnvironment(Environment):
         self.mass = mass
         self.friction = 0.01
         self.x = self.x0.copy()
+
+        self.sm_delays = dict()
+        for i in range(self.s_ndims):
+            self.sm_delays[i] = 0
+        self.a_ = np.zeros((self.world_dim, 1))
 
         # context
         self.current_context = np.dot(self.sensor_transform, self.x).flatten()
@@ -70,6 +75,9 @@ class PointmassEnvironment(Environment):
         # print("a.shape", a.shape)
         # print "a", a, self.x[self.conf.s_ndims/2:]
         v = self.x[self.world_dim:self.world_dim*2] * (1 - self.friction) + a * self.dt
+        
+        # self.a_ = a.copy()
+        
         
         # # world modification
         # v += np.sin(self.cnt * 0.01) * 0.05

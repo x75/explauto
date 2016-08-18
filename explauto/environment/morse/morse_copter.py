@@ -25,7 +25,7 @@ def reset_simulation():
     return
 
 class CopterMorseEnvironment(Environment):
-    def __init__(self, m_ndims, s_ndims, m_mins, m_maxs, s_mins, s_maxs, sensor_transform):
+    def __init__(self, m_ndims, s_ndims, m_mins, m_maxs, s_mins, s_maxs, sensor_transform, sm_delays):
         Environment.__init__(self, m_mins, m_maxs, s_mins, s_maxs)
         rospy.init_node("coptermorseenvironment")
         # assert motor dim == control mode
@@ -42,6 +42,10 @@ class CopterMorseEnvironment(Environment):
         # copy
         self.current_context = np.dot(self.sensor_transform, self.x).flatten()
 
+        # sensorimotor delays: specifies the delay of effect from motor to sensor for a given sensory variable
+        # key: sensor channel, value: delay
+        self.sm_delays = sm_delays
+        
         # ros stuff
         self.r = rospy.Rate(10)
         self.pubs = {}

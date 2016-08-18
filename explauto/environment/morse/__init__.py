@@ -3,7 +3,7 @@ from numpy import array, pi, eye
 from ...exceptions import ExplautoNoTestCasesError
 from .morse_copter import CopterMorseEnvironment
 
-def make_morse_conf(m_ndims, s_ndims, sensor_transform, m_mins, m_maxs, s_mins, s_maxs):
+def make_morse_conf(m_ndims, s_ndims, sensor_transform, m_mins, m_maxs, s_mins, s_maxs, sm_delays = {}):
     return dict(
         m_ndims = m_ndims,
         s_ndims = s_ndims,
@@ -12,6 +12,7 @@ def make_morse_conf(m_ndims, s_ndims, sensor_transform, m_mins, m_maxs, s_mins, 
         m_maxs = m_maxs, # array([m_max] * m_ndims),
         s_mins = s_mins,
         s_maxs = s_maxs,
+        sm_delays = sm_delays
     )
 
 copter_attitude = make_morse_conf(
@@ -23,7 +24,8 @@ copter_attitude = make_morse_conf(
     # m_mins = array([-pi/8.0, -pi/8.0, -pi/8.0, 0.3]),
     # m_maxs = array([ pi/8.0,  pi/8.0,  pi/8.0, 0.7]),
     s_mins = array([-1, -1, -1, -1, -1]),
-    s_maxs = array([ 1,  1,  1,  1,  1])
+    s_maxs = array([ 1,  1,  1,  1,  1]),
+    sm_delays = {0: 2, 1: 2, 2: 0, 3: 0, 4: 0}
     )
 
 copter_attitude_full = make_morse_conf(
@@ -35,7 +37,8 @@ copter_attitude_full = make_morse_conf(
     # m_mins = array([-pi/8.0, -pi/8.0, -pi/8.0, 0.3]),
     # m_maxs = array([ pi/8.0,  pi/8.0,  pi/8.0, 0.7]),
     s_mins = array([-10, -10,   0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -10, -10, -10]),
-    s_maxs = array([ 10,  10,  10,  1,  1,  1,  1,  1,  1,  1,  1,  1,  10,  10,  10])
+    s_maxs = array([ 10,  10,  10,  1,  1,  1,  1,  1,  1,  1,  1,  1,  10,  10,  10]),
+    sm_delays = {0: 2, 1: 2, 2: 0, 3: 2, 4: 2, 5: 0, 6: 1, 7: 1, 8: 1, 9: 1, 10: 1, 11: 1, 12: 0, 13: 0, 14: 0}
     )
 
 environment = CopterMorseEnvironment

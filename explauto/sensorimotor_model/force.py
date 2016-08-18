@@ -85,7 +85,7 @@ class LinearNetworkFORCEModel(SensorimotorModel):
             y, h = self.imodel.predict(x)
             y *= self.stats[3]
             # y = np.clip(y, 0.2, 0.8)
-            print self.__class__.__name__, "infer: y pre", y
+            # print self.__class__.__name__, "infer: y pre", y
             if self.mode == "explore":
                 # print self.__class__.__name__, "infer: explore: y.shape", y.shape, type(self.sigma_expl)
                 # n = np.random.normal(y, 1) * self.sigma_expl
@@ -102,9 +102,9 @@ class LinearNetworkFORCEModel(SensorimotorModel):
 
                 # print self.__class__.__name__, "infer: explore: n.shape", y.shape, n.shape, self.imodel.odim
                 y = y.copy() + n
-                print self.__class__.__name__, "infer: y post", y.shape, y
+                # print self.__class__.__name__, "infer: y post", y.shape, y
             y_ = bounds_min_max(y.T, self.m_mins, self.m_maxs)
-            print self.__class__.__name__, "infer: y bound", y_.shape, y_
+            # print self.__class__.__name__, "infer: y bound", y_.shape, y_
             return y_.reshape((self.imodel.odim,))
                 
         elif out_dims == self.m_dims[len(self.m_dims)/2:]:  # dm = i(M, S, dS)
@@ -208,8 +208,8 @@ configurations = {
         "modelsize": 600,
         # "modelsize": 300,
         # "modelsize": 100,
-        "explo_noise_type": "gaussian",
-        # "explo_noise_type": "pareto",
+        # "explo_noise_type": "gaussian",
+        "explo_noise_type": "pareto",
         # "sigma_explo_ratio": 0.8, # 0.8 yields best results so far
         # "sigma_explo_ratio": 0.1,   # point mass yeah!!! should also work with 0.3 or less, let's try
         # "sigma_explo_ratio": np.array([0.1, 0.1, 0.1, 0.2]),
