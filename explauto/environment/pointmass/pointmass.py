@@ -28,6 +28,7 @@ class PointmassEnvironment(Environment):
         self.sensnoise = sensnoise
         # self.spacedims = self.conf.s_ndims/2
         self.x0 = np.zeros((self.state_dim, 1)) # [0, 0] * self.conf.ndims
+        self.x_ = np.zeros((self.world_dim,  )) # [0, 0] * self.conf.ndims
         self.dt = dt
         self.force_max = force_max
         self.mass = mass
@@ -91,10 +92,17 @@ class PointmassEnvironment(Environment):
 
         self.x += self.sysnoise * random.randn(self.x.shape[0], self.x.shape[1])
 
+        self.x_[0] = self.x[0,0] * 0.1
+        self.x_[1] = self.x[1,0] * 0.1
+        self.x_[2] = self.x[2,0] * 0.1
+
+        print "self.x[2,0]", self.x[2,0]
+
         if self.doRos:
             self.msgs["pos"].data = []
             # print self.x.tolist()
-            self.msgs["pos"].data = (self.x * 0.1).flatten().tolist()
+            # self.msgs["pos"].data = (self.x * 0.1).flatten().tolist()
+            self.msgs["pos"].data = self.x_.flatten().tolist()
             self.pubs["pos"].publish(self.msgs["pos"])
         
         self.cnt += 1

@@ -10,6 +10,9 @@ sys.path.insert(0, "/home/src/QK/smp/imol")
 from imol.models import LinearNetwork, ReservoirNetwork
 
 class LinearNetworkFORCEModel(SensorimotorModel):
+    """Use single hidden layer feedforward random (non-)liner expansion and learn linear combination readout with online regression
+
+    (class is called LinearNetwork but it can even be nonlinear)"""
     def __init__(self, conf, modelsize = 100, sigma_explo_ratio=0.1, alpha = 1.0, eta = 1e-3, theta_state = 1e-2, input_scaling = 1.0,
                  g = 0.0, tau = 0.1, mtau = False, bias_scaling = 0.0, explo_noise_type = "gaussian"):
         SensorimotorModel.__init__(self, conf)

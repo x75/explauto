@@ -37,6 +37,7 @@ class RandomInterestDynamicCopter(RandomInterest):
 
         self.r_g     = [1, 1, 1] # at origin, 1m alt
         self.r_g_yaw = np.pi * 0.0
+        # print "expl_dims", expl_dims
         self.s_g     = [0, 0, -0.3, 1, 0] #
 
     def sample_given_more_context(self, c, c_dims, x_):
@@ -45,7 +46,8 @@ class RandomInterestDynamicCopter(RandomInterest):
             self.r_g_yaw = self.generate_real_goal_yaw() #
         self.cnt += 1
         self.s_g = self.compute_sensory_goal_from_real_goal(x_)
-        return self.s_g
+        # print "c_dims", c_dims
+        return self.s_g[:len(c_dims)]
 
     def compute_sensory_goal_from_real_goal(self, x_):
         # z (altitude) component
@@ -55,7 +57,7 @@ class RandomInterestDynamicCopter(RandomInterest):
             else:
                 self.s_g[2] = -0.3
         else: # continuous goal
-            self.s_g[2] = x_[2] - self.r_g[2]            
+            self.s_g[2] = x_[2] - self.r_g[2]
 
         # lateral, with scheduling
         if self.cnt > self.lattime:
@@ -89,7 +91,7 @@ class RandomInterestDynamicCopter(RandomInterest):
         # Draw a goal given this context
         # self.s_g = list(im_model.sample_given_context(context, range(context_mode["context_n_dims"])))
         # TODO: if pos.z != setpoint, self.s_g = vel towards setpoint
-        print("self.s_g", type(self.s_g), self.s_g, self.r_g)
+        print("interest_model.smp self.s_g", type(self.s_g), self.s_g, self.r_g)
         return self.s_g
         
     def generate_real_goal(self):
