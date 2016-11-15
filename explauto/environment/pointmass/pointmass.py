@@ -92,9 +92,10 @@ class PointmassEnvironment(Environment):
 
         self.x += self.sysnoise * random.randn(self.x.shape[0], self.x.shape[1])
 
-        self.x_[0] = self.x[0,0] * 0.1
-        self.x_[1] = self.x[1,0] * 0.1
-        self.x_[2] = self.x[2,0] * 0.1
+        for i in range(self.world_dim):
+            self.x_[i] = self.x[i,0] * 0.1
+            # self.x_[1] = self.x[1,0] * 0.1
+            # self.x_[2] = self.x[2,0] * 0.1
 
         print "self.x[2,0]", self.x[2,0]
 
