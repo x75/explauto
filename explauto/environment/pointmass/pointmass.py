@@ -23,7 +23,7 @@ class PointmassEnvironment(Environment):
         self.s_ndims = s_ndims
         self.sensor_transform = sensor_transform # state to sensor transformation matrix
                 
-        print "self.conf", self.conf
+        # print "%s.__init__: self.conf = %s" % (self.__class__.__name__, self.conf)
         self.sysnoise  = sysnoise
         self.sensnoise = sensnoise
         # self.spacedims = self.conf.s_ndims/2
@@ -56,6 +56,7 @@ class PointmassEnvironment(Environment):
             self.msgs["pos"] = Float32MultiArray()
         
     def compute_motor_command(self, ag_state):
+        print "ag_state", ag_state
         return bounds_min_max(ag_state, self.conf.m_mins, self.conf.m_maxs)
 
     def reset(self):
@@ -65,7 +66,7 @@ class PointmassEnvironment(Environment):
         # print "u", u
         # FIXME: insert motor transfer function
         a = (u/self.mass).reshape((self.world_dim, 1))
-        a += np.random.normal(0.05, 0.01, a.shape)
+        # a += np.random.normal(0.05, 0.01, a.shape)
 
         # # world modification
         # if np.any(self.x[:self.world_dim] > 0):
@@ -97,7 +98,7 @@ class PointmassEnvironment(Environment):
             # self.x_[1] = self.x[1,0] * 0.1
             # self.x_[2] = self.x[2,0] * 0.1
 
-        print "self.x[2,0]", self.x[2,0]
+        # print "self.x[2,0]", self.x[2,0]
 
         if self.doRos:
             self.msgs["pos"].data = []

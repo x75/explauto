@@ -30,8 +30,19 @@ low_dim_vel = make_pointmass_config(st_ndims = 3,
                                 s_mins = array([-1.0]),
                                 s_maxs = array([ 1.0]),
                                 mass = 1,
-                                sysnoise = 0.001,
-                                sensnoise = 0.001)
+                                sysnoise = 0.00,
+                                sensnoise = 0.00)
+
+low_dim_acc_vel = make_pointmass_config(st_ndims = 3,
+                                m_ndims = 1,
+                                s_ndims = 1,
+                                sensor_transform = np.array([[0, 1, 0], [0, 0, 1]]),
+                                m_max = 1.0,
+                                s_mins = array([-1.0]),
+                                s_maxs = array([ 1.0]),
+                                mass = 1,
+                                sysnoise = 0.00,
+                                sensnoise = 0.00)
 
 low_dim_full = make_pointmass_config(st_ndims = 3,
                                 m_ndims = 1,
@@ -112,6 +123,7 @@ configurations = {
     'low_dim_vel':  low_dim_vel,
     'mid_dim_vel':  mid_dim_vel,
     'high_dim_vel': high_dim_vel,
+    'low_dim_acc_vel':  low_dim_acc_vel,
     # 'high_dimensional': hd_dim,
     # 'high_dim_high_s_range': hd_dim_range,
     'default': low_dim_vel
