@@ -7,7 +7,9 @@ from ...exceptions import ExplautoNoTestCasesError
 from .pointmass import PointmassEnvironment
 
 
-def make_pointmass_config(st_ndims, m_ndims, s_ndims, sensor_transform, m_max, s_mins, s_maxs, mass, sysnoise, sensnoise, doRos = False, control_order = 2):
+def make_pointmass_config(st_ndims, m_ndims, s_ndims, sensor_transform,
+                          m_max, s_mins, s_maxs, mass, sysnoise, sensnoise,
+                          doRos = False, control_order = 2, friction = 0.01):
     return dict(st_ndims = st_ndims,
                 m_ndims = m_ndims,
                 s_ndims = s_ndims,
@@ -20,7 +22,8 @@ def make_pointmass_config(st_ndims, m_ndims, s_ndims, sensor_transform, m_max, s
                 sysnoise = sysnoise,
                 sensnoise = sensnoise,
                 doRos = doRos,
-                control_order = control_order
+                control_order = control_order,
+                friction = friction
     )
 
 low_dim_vel = make_pointmass_config(st_ndims = 3,
@@ -156,13 +159,15 @@ mid_dim_acc_vel = make_pointmass_config(st_ndims = 9,
                                     [0, 0, 0, 0, 0, 0, 0, 1, 0],
                                     [0, 0, 0, 0, 0, 0, 0, 0, 1],
                                     ]),
-                                m_max = 1,
+                                m_max = 1.0,
                                 s_mins = array([-1.0] *  3),
                                 s_maxs = array([ 1.0] *  3),
                                 mass = 1.0,
-                                sysnoise = 0.005,
-                                sensnoise = 0.005,
-                                doRos = True)
+                                sysnoise = 0.0,
+                                sensnoise = 0.0,
+                                doRos = False,
+                                friction = 0.01,
+                                )
 # smq
 high_dim_acc_vel = make_pointmass_config(st_ndims = 3 * 10,
                                 m_ndims = 10,

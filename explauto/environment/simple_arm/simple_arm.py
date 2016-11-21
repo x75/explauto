@@ -61,9 +61,13 @@ class SimpleArmEnvironment(Environment):
         self.length_ratio = length_ratio
         self.noise = noise
 
+        self.factor = 1.0
+
         self.lengths = lengths(self.conf.m_ndims, self.length_ratio)
 
     def compute_motor_command(self, joint_pos_ag):
+        # print "joint_pos_ag", joint_pos_ag
+        joint_pos_ag *= self.factor
         return bounds_min_max(joint_pos_ag, self.conf.m_mins, self.conf.m_maxs)
 
     def compute_sensori_effect(self, joint_pos_env):
