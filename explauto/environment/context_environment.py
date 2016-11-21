@@ -44,6 +44,7 @@ class ContextEnvironment(Environment):
         return rand_bounds(self.conf.bounds[:, len(self.conf.m_dims)/2:len(self.conf.m_dims)], n)
     
     def compute_motor_command(self, ag_state):
+        # print "ag_state", ag_state, self.conf.m_mins, self.conf.m_maxs
         return bounds_min_max(ag_state, self.conf.m_mins, self.conf.m_maxs)
     
     def compute_sensori_effect(self, m_):

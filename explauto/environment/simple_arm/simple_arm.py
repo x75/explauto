@@ -99,7 +99,8 @@ class SimpleDynamicArmEnvironment(SimpleArmEnvironment):
         self.st = [0 for n in range(self.conf.s_ndims)]
         self.ds = [0 for n in range(self.conf.s_ndims)]
 
-        if True:
+        self.doros = False
+        if self.doros:
             import rospy
             from std_msgs.msg import Float32MultiArray
             rospy.init_node("simplearm_environment")
@@ -116,13 +117,13 @@ class SimpleDynamicArmEnvironment(SimpleArmEnvironment):
         # else:
         #     return [mi/4 for mi in m]
         self.m += m
-        return self.m 
+        return self.m
         
     def compute_sensori_effect(self, m):
         # self.m += m
         s = SimpleArmEnvironment.compute_sensori_effect(self, m)
         
-        if True:
+        if self.doros:
             self.msgs["pos"].data = []
             # print self.x.tolist()
             self.msgs["pos"].data = (s * 1.0).flatten().tolist()
