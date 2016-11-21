@@ -4,6 +4,7 @@ from numpy import random
 
 from ...exceptions import ExplautoNoTestCasesError
 from .simple_arm import SimpleArmEnvironment
+from .simple_arm import SimpleDynamicArmEnvironment
 
 
 def make_arm_config(m_ndims, m_max, s_mins, s_maxs, length_ratio, noise):
