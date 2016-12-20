@@ -10,7 +10,9 @@ from ..environment import Environment
 from ...utils import bounds_min_max
 
 class PointmassEnvironment(Environment):
-    def __init__(self, st_ndims, m_ndims, s_ndims, sensor_transform, m_mins, m_maxs, s_mins, s_maxs, sysnoise = 0.0, sensnoise = 0.0, force_max = 1, mass = 1.0, dt = 0.1, doRos = False, control_order = 2, friction = 0.01):
+    def __init__(self, st_ndims, m_ndims, s_ndims, sensor_transform, m_mins, m_maxs, s_mins, s_maxs,
+                 sysnoise = 0.0, sensnoise = 0.0, force_max = 1, mass = 1.0, dt = 0.1,
+                 doRos = False, control_order = 2, friction = 0.01, motor_aberration = {}):
         Environment.__init__(self, m_mins, m_maxs, s_mins, s_maxs)
 
         # FIXME: dimensions
@@ -23,6 +25,9 @@ class PointmassEnvironment(Environment):
         self.s_ndims = s_ndims
         self.sensor_transform = sensor_transform # state to sensor transformation matrix
 
+        # how and how much motor aberrates from setpoint / input
+        self.motor_aberration = motor_aberration
+        
         # check wether configured number of sensors matches sensor transform
         assert(self.sensor_transform.shape[0] == self.s_ndims)
                 
@@ -65,6 +70,16 @@ class PointmassEnvironment(Environment):
         
     def compute_motor_command(self, ag_state):
         # print "%s.compute_motor_command arg ag_state %s" % (self.__class__.__name__, ag_state)
+        if self.motor_aberration.has_key("type"):
+            if self.motor_aberration["type"] == "sin":
+                ag_state = np.sin(ag_state * np.pi * self.motor_aberration["coef"])
+            elif self.motor_aberration["type"] == "tanh":
+                ag_state = np.tanh(ag_state * self.motor_aberration["coef"])
+            elif self.motor_aberration["type"] == "exp":
+                ag_state = ag_state * np.exp(-np.abs(ag_state) * self.motor_aberration["coef"])
+        if self.motor_aberration.has_key("noise"):
+            ag_state += np.random.normal(self.motor_aberration["noise_mu"], self.motor_aberration["noise_sigma"],
+                                         ag_state.shape)
         return bounds_min_max(ag_state, self.conf.m_mins, self.conf.m_maxs)
 
     def reset(self):

@@ -9,7 +9,7 @@ from .pointmass import PointmassEnvironment
 
 def make_pointmass_config(st_ndims, m_ndims, s_ndims, sensor_transform,
                           m_max, s_mins, s_maxs, mass, sysnoise, sensnoise,
-                          doRos = False, control_order = 2, friction = 0.01):
+                          doRos = False, control_order = 2, friction = 0.01, motor_aberration = {}):
     return dict(st_ndims = st_ndims,
                 m_ndims = m_ndims,
                 s_ndims = s_ndims,
@@ -23,7 +23,8 @@ def make_pointmass_config(st_ndims, m_ndims, s_ndims, sensor_transform,
                 sensnoise = sensnoise,
                 doRos = doRos,
                 control_order = control_order,
-                friction = friction
+                friction = friction,
+                motor_aberration = motor_aberration
     )
 
 low_dim_vel = make_pointmass_config(st_ndims = 3,
@@ -35,7 +36,12 @@ low_dim_vel = make_pointmass_config(st_ndims = 3,
                                 s_maxs = array([ 1.0]),
                                 mass = 1,
                                 sysnoise = 0.00,
-                                sensnoise = 0.00)
+                                sensnoise = 0.00,
+                                # motor_aberration = {"type": "sin", "coef": 0.3, "noise": True, "noise_mu": 0.0, "noise_sigma": 0.01}
+                                # motor_aberration = {"type": "tanh", "coef": 10.0, "noise": True, "noise_mu": 0.0, "noise_sigma": 0.01}
+                                # motor_aberration = {"type": "exp", "coef": 1.0, "noise": True, "noise_mu": 0.0, "noise_sigma": 0.01}
+                                # motor_aberration = {"noise": True, "noise_mu": 0.0, "noise_sigma": 0.01}
+                                )
 
 low_dim_full = make_pointmass_config(st_ndims = 3,
                                 m_ndims = 1,
@@ -62,7 +68,7 @@ mid_dim_vel = make_pointmass_config(st_ndims = 9,
                                 mass = 1.0,
                                 sysnoise = 0.005,
                                 sensnoise = 0.005,
-                                doRos = True)
+                                doRos = False)
 
 mid_dim_full = make_pointmass_config(st_ndims = 9,
                                 m_ndims = 3,
