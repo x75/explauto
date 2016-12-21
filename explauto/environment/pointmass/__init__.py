@@ -37,9 +37,9 @@ low_dim_vel = make_pointmass_config(st_ndims = 3,
                                 mass = 1,
                                 sysnoise = 0.00,
                                 sensnoise = 0.00,
-                                # motor_aberration = {"type": "sin", "coef": 0.3, "noise": True, "noise_mu": 0.0, "noise_sigma": 0.01}
+                                motor_aberration = {"type": "sin", "coef": -0.4, "noise": True, "noise_mu": 0.0, "noise_sigma": 0.01}
                                 # motor_aberration = {"type": "tanh", "coef": 10.0, "noise": True, "noise_mu": 0.0, "noise_sigma": 0.01}
-                                # motor_aberration = {"type": "exp", "coef": 1.0, "noise": True, "noise_mu": 0.0, "noise_sigma": 0.01}
+                                # motor_aberration = {"type": "exp", "coef": 0.6, "noise": True, "noise_mu": 0.0, "noise_sigma": 0.01}
                                 # motor_aberration = {"noise": True, "noise_mu": 0.0, "noise_sigma": 0.01}
                                 )
 
