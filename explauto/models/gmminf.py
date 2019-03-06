@@ -29,7 +29,7 @@ def conditional(mean, covar, dims_in, dims_out, covariance_type='full'):
     return lambda x: [cond_mean(x), cond_covar]
 
 
-class GMM(sklearn.mixture.GMM):
+class GMM(sklearn.mixture.GaussianMixture):
     def __init__(self, **kwargs):
         sklearn.mixture.GMM.__init__(self, **kwargs)
         self.in_dims = array([])
