@@ -5,8 +5,7 @@ import sys
 from .sensorimotor_model import SensorimotorModel
 from explauto.utils import bounds_min_max
 
-sys.path.insert(0, "/home/src/QK/smp/imol")
-
+# sys.path.insert(0, "/home/src/QK/smp/imol")
 from imol.models import LinearNetwork, ReservoirNetwork
 
 class LinearNetworkFORCEModel(SensorimotorModel):
